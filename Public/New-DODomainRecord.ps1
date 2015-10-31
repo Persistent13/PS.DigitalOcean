@@ -71,12 +71,12 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$true,
+        [Parameter(Mandatory=$false,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey,
+        [String]$APIKey = $global:SavedDOAPIKey,
         # Used to specify the name of the domain name to create the record.
         [Parameter(Mandatory=$true,
                    Position=1)]
@@ -127,6 +127,10 @@
 
     Begin
     {
+        if(-not $APIKey)
+        {
+            throw 'Use Connect-DOCloud to specifiy the API key.'
+        }
         if($RecordType -eq 'MX' -or $RecordType -eq 'CNAME' -or $RecordType -eq 'NS')
         {
             if(-not $Target.EndsWith('.'))

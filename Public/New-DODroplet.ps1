@@ -103,12 +103,12 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$true,
+        [Parameter(Mandatory=$false,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey,
+        [String]$APIKey = $global:SavedDOAPIKey,
         # Used to specify the name of the droplet.
         [Parameter(Mandatory=$true,
                    Position=1)]
@@ -179,6 +179,10 @@
 
     Begin
     {
+        if(-not $APIKey)
+        {
+            throw 'Use Connect-DOCloud to specifiy the API key.'
+        }
         [Hashtable]$sessionBodyBuild = @{}
         if($Image)
         {

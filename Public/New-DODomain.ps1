@@ -36,12 +36,12 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$false, 
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey,
+        [String]$APIKey = $global:SavedDOAPIKey,
         # Used to specify the name of the new domain name.
         [Parameter(Mandatory=$true, 
                    Position=1)]
@@ -59,6 +59,10 @@
 
     Begin
     {
+        if(-not $APIKey)
+        {
+            throw 'Use Connect-DOCloud to specifiy the API key.'
+        }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [String]$sessionBody = @{'name'=$DomainName;'ip_address'=$Target} | ConvertTo-Json
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/domains/'

@@ -38,16 +38,20 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$false, 
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey
+        [String]$APIKey = $global:SavedDOAPIKey
     )
 
     Begin
     {
+        if(-not $APIKey)
+        {
+            throw 'Use Connect-DOCloud to specifiy the API key.'
+        }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/account/'
     }

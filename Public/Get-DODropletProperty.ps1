@@ -98,12 +98,12 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$false, 
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey,
+        [String]$APIKey = $global:SavedDOAPIKey,
         # API key to access account.
         [Parameter(Mandatory=$false, 
                    Position=1)]
@@ -115,6 +115,11 @@
 
     Begin
     {
+        if(-not $APIKey)
+        {
+            throw 'Use Connect-DOCloud to specifiy the API key.'
+        }
+        [PSObject]$doReturnInfo = @()
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = "https://api.digitalocean.com/v2/droplets/$DropletID/"
         [Uri]$doApiUriWithKernel = '{0}{1}' -f $doApiUri,'kernels'
@@ -136,13 +141,14 @@
             $errorDetail = $_.Exception.Message
             Write-Warning "Could not pull droplet property information.`n`r$errorDetail"
         }
-        $doInfo = @{
-            'Kernels' = $($kernel | ConvertFrom-Json).kernels
-            'Actions' = $($action | ConvertFrom-Json).actions
-            'Backups'= $($doBackupInfo | ConvertFrom-Json).backups
-            'Snapshots' = $($snapshot | ConvertFrom-Json).snapshots
-        }
-        $doReturnInfo = New-Object -TypeName PSObject -Property $doInfo
+
+        $doReturnInfo = @(
+            $doKernelInfo.kernels,
+            $doActionInfo.actions,
+            $doBackupInfo.backups,
+            $doSnapshotInfo.snapshots
+        )
+        #$doReturnInfo = New-Object -TypeName PSObject -Property $doInfo
     }
     End
     {
