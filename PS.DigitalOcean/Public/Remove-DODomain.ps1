@@ -28,25 +28,32 @@
 .FUNCTIONALITY
    PS.DigitalOcean
 #>
-    [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+    [CmdletBinding(SupportsShouldProcess=$true,
+                   ConfirmImpact='High',
+                   PositionalBinding=$true)]
     [Alias('rdod')]
     [OutputType()]
     Param
     (
-        # API key to access account.
-        [Parameter(Mandatory=$false, 
+        # Used to specify the name of the domain name to delete.
+        [Parameter(Mandatory=$true, 
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Alias('Key','Token')]
-        [String]$APIKey = $script:SavedDOAPIKey,
-        # Used to specify the name of the domain name to delete.
-        [Parameter(Mandatory=$true, 
+        [String[]]$DomainName,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [String[]]$DomainName
+        [Switch]$Force,
+        # API key to access account.
+        [Parameter(Mandatory=$false, 
+                   Position=2)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
@@ -63,15 +70,18 @@
         $doReturnInfo = @()
         foreach($domain in $DomainName)
         {
-            try
+            if($Force -or $PSCmdlet.ShouldProcess("Deleting: $domain"))
             {
-                $doApiUriWithDomain = '{0}{1}' -f $doApiUri,$domain
-                $doReturnInfo += Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
-            }
-            catch
-            {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Unable to delete the domain.`n`r$errorDetail"
+                try
+                {
+                    $doApiUriWithDomain = '{0}{1}' -f $doApiUri,$domain
+                    $doReturnInfo += Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
+                }
+                catch
+                {
+                    $errorDetail = $_.Exception.Message
+                    Write-Warning "Unable to delete the domain.`n`r$errorDetail"
+                }
             }
         }
     }

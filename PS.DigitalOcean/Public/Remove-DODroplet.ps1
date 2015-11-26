@@ -28,26 +28,33 @@
 .FUNCTIONALITY
    PS.DigitalOcean
 #>
-    [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+    [CmdletBinding(SupportsShouldProcess=$true,
+                   ConfirmImpact='High',
+                   PositionalBinding=$true)]
     [Alias('rdovm')]
     [OutputType()]
     Param
     (
-        # API key to access account.
-        [Parameter(Mandatory=$false, 
+        # Used to specify the name of the domain name to delete.
+        [Parameter(Mandatory=$true, 
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Alias('Key','Token')]
-        [String]$APIKey = $script:SavedDOAPIKey,
-        # Used to specify the name of the domain name to delete.
-        [Parameter(Mandatory=$true, 
+        [Alias('ID')]
+        [UInt64[]]$DropletID,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Alias('ID')]
-        [UInt64[]]$DropletID
+        [Switch]$Force,
+        # API key to access account.
+        [Parameter(Mandatory=$false, 
+                   Position=2)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
@@ -64,15 +71,18 @@
         $doReturnInfo = @()
         foreach($droplet in $DropletID)
         {
-            try
+            if($Force -or $PSCmdlet.ShouldProcess("Deleting: $droplet."))
             {
-                $doApiUriWithDroplet = '{0}{1}' -f $doApiUri,$droplet
-                $doReturnInfo += Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDroplet -Headers $sessionHeaders -ErrorAction Stop
-            }
-            catch
-            {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Unable to delete the droplet ID $droplet.`n`r$errorDetail"
+                try
+                {
+                    $doApiUriWithDroplet = '{0}{1}' -f $doApiUri,$droplet
+                    $doReturnInfo += Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDroplet -Headers $sessionHeaders -ErrorAction Stop
+                }
+                catch
+                {
+                    $errorDetail = $_.Exception.Message
+                    Write-Warning "Unable to delete the droplet ID $droplet.`n`r$errorDetail"
+                }
             }
         }
     }

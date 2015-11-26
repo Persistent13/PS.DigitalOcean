@@ -96,42 +96,36 @@
 .FUNCTIONALITY
    PS.DigitalOcean
 #>
-    [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+    [CmdletBinding(SupportsShouldProcess=$true,
+                   ConfirmImpact='Low',
+                   PositionalBinding=$true)]
     [Alias('ndovm')]
     [OutputType([PSCustomObject])]
     Param
     (
-        # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=0)]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [Alias('Key','Token')]
-        [String]$APIKey = $script:SavedDOAPIKey,
         # Used to specify the name of the droplet.
         [Parameter(Mandatory=$true,
-                   Position=1)]
+                   Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$Name,
         # Used to specify the regin the droplet is created.
         [Parameter(Mandatory=$true,
-                   Position=2)]
+                   Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('ams1','ams2','ams3','fra1','lon1','nyc1','nyc2','nyc3','sfo1','sgp1','tor1')]
         [String]$Region,
         # Used to specify the size of the droplet.
         [Parameter(Mandatory=$true,
-                   Position=3)]
+                   Position=2)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('512mb','1gb','2gb','4gb','8gb','16gb','32gb','48gb','64gb')]
         [String]$Size,
         # Used to specify the image installed to the droplet.
         [Parameter(Mandatory=$false,
-                   Position=4)]
+                   Position=3)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('centos-5-8-x32','centos-5-8-x64','centos-6-5-x32','centos-6-5-x64','coreos-beta',`
@@ -141,40 +135,53 @@
         [String]$Image,
         # Used to specify the image ID installed to the droplet.
         [Parameter(Mandatory=$false,
-                   Position=5)]
+                   Position=4)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt64]$ImageID,
         # Used to specify the public SSH keys added to the droplet.
         [Parameter(Mandatory=$false,
-                   Position=6)]
+                   Position=5)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String[]]$SSHKey,
         # Used to specify if automatic backups are enabled for the droplet.
         [Parameter(Mandatory=$false,
-                   Position=7)]
+                   Position=6)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Backups,
         # Used to specify if IPv6 is enabled for the droplet.
         [Parameter(Mandatory=$false,
-                   Position=8)]
+                   Position=7)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$IPv6,
         # Used to specify if private networking is enabled for the droplet.
         [Parameter(Mandatory=$false,
-                   Position=9)]
+                   Position=8)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$PrivateNetworking,
         # Used to specify user data for the droplet.
         [Parameter(Mandatory=$false,
+                   Position=9)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [String]$UserData,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
                    Position=10)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [String]$UserData
+        [Switch]$Force,
+        # API key to access account.
+        [Parameter(Mandatory=$false,
+                   Position=11)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
@@ -183,18 +190,26 @@
         {
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
+        if(-not $Image -and -not $ImageID)
+        {
+            throw 'You must specifiy either an image or image ID.'
+        }
         [Hashtable]$sessionBodyBuild = @{}
         if($Image)
         {
             $sessionBodyBuild += @{'image'=$Image}
         }
-        else
+        if($ImageID)
         {
             $sessionBodyBuild += @{'image'=$ImageID}
         }
         if($SSHKey)
         {
             $sessionBodyBuild += @{'ssh_keys'=$SSHKey}
+        }
+        else
+        {
+            $SSHKey = $false
         }
         if($Backups)
         {
@@ -222,14 +237,17 @@
         $doReturnInfo = @()
         foreach($droplet in $Name)
         {
-            try
+            if($Force -or $PSCmdlet.ShouldProcess("Droplet creation with Name: $droplet Image: $Image$ImageID Region: $Region Size: $Size SSH Key: $SSHKey Backups: $Backups IPv6: $IPv6 PrivateNetworking: $PrivateNetworking UserData: $UserData"))
             {
-                $doReturnInfo += Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
-            }
-            catch
-            {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Unable to create the droplet.`n`r$errorDetail"
+                try
+                {
+                    $doReturnInfo += Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                }
+                catch
+                {
+                    $errorDetail = $_.Exception.Message
+                    Write-Warning "Unable to create the droplet.`n`r$errorDetail"
+                }
             }
         }
     }

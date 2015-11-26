@@ -63,8 +63,9 @@
 .FUNCTIONALITY
    PS.DigitalOcean
 #>
-    [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+    [CmdletBinding(SupportsShouldProcess=$true,
+                   ConfirmImpact='High',
+                   PositionalBinding=$true)]
     [Alias('sdodr')]
     [OutputType([PSCustomObject])]
     Param
@@ -128,7 +129,13 @@
                    Position=8)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [UInt16]$Weight
+        [UInt16]$Weight,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
+                   Position=9)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Switch]$Force
     )
 
     Begin
@@ -170,15 +177,18 @@
         $doReturnInfo = @()
         foreach($record in $DomainRecordID)
         {
-            try
+            if($Force -or $PSCmdlet.ShouldProcess("Update record: $record."))
             {
-                $doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
-                $doReturnInfo += Invoke-RestMethod -Method PUT -Uri $doApiUriWithRecord -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
-            }
-            catch
-            {
-                $errorDetail = $_.Exception.Message.Trim()
-                Write-Warning "Unable to update domain record $record.`n`r$errorDetail"
+                try
+                {
+                    $doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
+                    $doReturnInfo += Invoke-RestMethod -Method PUT -Uri $doApiUriWithRecord -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                }
+                catch
+                {
+                    $errorDetail = $_.Exception.Message.Trim()
+                    Write-Warning "Unable to update domain record $record.`n`r$errorDetail"
+                }
             }
         }
     }

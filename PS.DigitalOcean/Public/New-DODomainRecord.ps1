@@ -64,28 +64,22 @@
 .FUNCTIONALITY
    PS.DigitalOcean
 #>
-    [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+    [CmdletBinding(SupportsShouldProcess=$true,
+                   ConfirmImpact='Low',
+                   PositionalBinding=$true)]
     [Alias('ndodr')]
     [OutputType([PSCustomObject])]
     Param
     (
-        # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=0)]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [Alias('Key','Token')]
-        [String]$APIKey = $script:SavedDOAPIKey,
         # Used to specify the name of the domain name to create the record.
         [Parameter(Mandatory=$true,
-                   Position=1)]
+                   Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$DomainName,
         # Used to specify the DNS record type.
         [Parameter(Mandatory=$true,
-                   Position=2)]
+                   Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('A','AAAA','CNAME','MX','TXT','SRV','NS')]
@@ -93,36 +87,49 @@
         [String]$RecordType,
         # Used to specify the address of the new domain name. IP v4 or v6 and the name of the SRV and MX record.
         [Parameter(Mandatory=$true,
-                   Position=3)]
+                   Position=2)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('IPAddress','RecordData','Data','Address')]
         [String]$Target,
         # Used to specify the name of the new domain record.
         [Parameter(Mandatory=$false,
-                   Position=4)]
+                   Position=3)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Record','Name')]
         [String]$DomainRecord,
         # Used to set the priority of a SRV or MX record.
         [Parameter(Mandatory=$false,
-                   Position=5)]
+                   Position=4)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt16]$Priority,
         # Used to set the port of a SRV record.
         [Parameter(Mandatory=$false,
-                   Position=6)]
+                   Position=5)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt16]$Port,
         # Used to set the weight of a SRV record.
         [Parameter(Mandatory=$false,
+                   Position=6)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [UInt16]$Weight,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
                    Position=7)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [UInt16]$Weight
+        [Switch]$Force,
+        # API key to access account.
+        [Parameter(Mandatory=$false,
+                   Position=8)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
@@ -144,14 +151,17 @@
     }
     Process
     {
-        try
+        if($Force -or $PSCmdlet.ShouldProcess("Record creation for $DomainName with RecordName: $RecordName RecordType: $RecordType Target: $Target Priority: $Priority Port: $Port Weight: $Weight"))
         {
-            $doReturnInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
-        }
-        catch
-        {
-            $errorDetail = $_.Exception.Message
-            Write-Warning "Unable to create the domain record.`n`r$errorDetail"
+            try
+            {
+                $doReturnInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+            }
+            catch
+            {
+                $errorDetail = $_.Exception.Message
+                Write-Warning "Unable to create the domain record.`n`r$errorDetail"
+            }
         }
     }
     End

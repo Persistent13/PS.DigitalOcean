@@ -91,26 +91,33 @@
 .FUNCTIONALITY
    PS.DigitalOcean
 #>
-    [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+    [CmdletBinding(SupportsShouldProcess=$true,
+                   ConfirmImpact='High',
+                   PositionalBinding=$true)]
     [Alias('ddob')]
     [OutputType([PSCustomObject])]
     Param
     (
-        # API key to access account.
-        [Parameter(Mandatory=$false, 
+        # Uniqe ID of the Droplet.
+        [Parameter(Mandatory=$true,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Alias('Key','Token')]
-        [String]$APIKey = $script:SavedDOAPIKey,
-        # API key to access account.
-        [Parameter(Mandatory=$true, 
+        [Alias('ID')]
+        [UInt64[]]$DropletID,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Alias('ID')]
-        [UInt64[]]$DropletID
+        [Switch]$Force,
+        # API key to access account.
+        [Parameter(Mandatory=$false, 
+                   Position=2)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
@@ -127,15 +134,18 @@
     {
         foreach($droplet in $DropletID)
         {
-            try
+            if($Force -or $PSCmdlet.ShouldProcess("Disabling backups for $droplet."))
             {
-                $doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
-                $doReturnInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
-            }
-            catch
-            {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Could not pull the droplet information for $droplet.`n`r$errorDetail"
+                try
+                {
+                    $doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
+                    $doReturnInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                }
+                catch
+                {
+                    $errorDetail = $_.Exception.Message
+                    Write-Warning "Could not pull the droplet information for $droplet.`n`r$errorDetail"
+                }
             }
         }
     }

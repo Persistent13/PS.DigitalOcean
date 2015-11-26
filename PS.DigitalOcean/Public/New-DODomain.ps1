@@ -29,32 +29,39 @@
 .FUNCTIONALITY
    PS.DigitalOcean
 #>
-    [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+    [CmdletBinding(SupportsShouldProcess=$true,
+                   ConfirmImpact='Low',
+                   PositionalBinding=$true)]
     [Alias('ndod')]
     [OutputType([PSCustomObject])]
     Param
     (
-        # API key to access account.
-        [Parameter(Mandatory=$false, 
-                   Position=0)]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [Alias('Key','Token')]
-        [String]$APIKey = $script:SavedDOAPIKey,
         # Used to specify the name of the new domain name.
         [Parameter(Mandatory=$true, 
-                   Position=1)]
+                   Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$DomainName,
         # Used to specify the address of the new domain name. IP v4 or v6.
         [Parameter(Mandatory=$true,
-                   Position=2)]
+                   Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('IPAddress','RecordData','Data','Address')]
-        [String]$Target
+        [String]$Target,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
+                   Position=2)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Switch]$Force,
+        # API key to access account.
+        [Parameter(Mandatory=$false, 
+                   Position=3)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
@@ -69,14 +76,17 @@
     }
     Process
     {
-        try
+        if($Force -or $PSCmdlet.ShouldProcess("Creating $DomainName with the IP address of $Target."))
         {
-            $doReturnInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
-        }
-        catch
-        {
-            $errorDetail = $_.Exception.Message
-            Write-Warning "Unable to create the domain.`n`r$errorDetail"
+            try
+            {
+                $doReturnInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+            }
+            catch
+            {
+                $errorDetail = $_.Exception.Message
+                Write-Warning "Unable to create the domain.`n`r$errorDetail"
+            }
         }
     }
     End

@@ -1,0 +1,14 @@
+PSTOPIC
+    about_PS.DigitalOcean
+
+SHORT DESCRIPTION
+    PS.DigitalOcean allows you to interact with the DigitalOcean API v2 via PowerShell functions.
+
+LONG DESCRIPTION
+    PS.DigitalOcean allows you to interact with the DigitalOcean API v2 via PowerShell functions.
+
+    You can find API documentation here:
+        https://developers.digitalocean.com/documentation/v2/
+
+DETAILED DESCRIPTION
+    The PS.DigitalOcean module supports all the features provided via the Digital Ocean API such as: get Droplets, create and Remove a Droplet, start, shutdown, reboot a Droplet, etc.   
