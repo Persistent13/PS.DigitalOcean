@@ -54,7 +54,7 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey = $global:SavedDOAPIKey,
+        [String]$APIKey = $script:SavedDOAPIKey,
         # Used to get a specific domain with the domain name.
         [Parameter(Mandatory=$false, 
                    Position=1)]

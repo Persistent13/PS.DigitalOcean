@@ -108,7 +108,7 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey = $global:SavedDOAPIKey,
+        [String]$APIKey = $script:SavedDOAPIKey,
         # Used to specify the name of the droplet.
         [Parameter(Mandatory=$true,
                    Position=1)]

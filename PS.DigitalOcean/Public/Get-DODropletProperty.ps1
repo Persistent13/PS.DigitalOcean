@@ -1,10 +1,10 @@
-﻿function Get-DODroplet
+﻿function Get-DODropletProperty
 {
 <#
 .Synopsis
-   The Get-DODroplet cmdlet pulls droplet information from the Digital Ocean cloud.
+   The Get-DODropletProperty cmdlet pulls droplet property information from the Digital Ocean cloud.
 .DESCRIPTION
-   The Get-DODroplet cmdlet pulls droplet information from the Digital Ocean cloud.
+   The Get-DODropletProperty cmdlet pulls droplet property information from the Digital Ocean cloud.
 
    An API key is required to use this cmdlet.
 .EXAMPLE
@@ -93,7 +93,7 @@
 #>
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
-    [Alias('gdovm')]
+    [Alias('gdovmp')]
     [OutputType([PSCustomObject])]
     Param
     (
@@ -103,14 +103,14 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey = $global:SavedDOAPIKey,
+        [String]$APIKey = $script:SavedDOAPIKey,
         # API key to access account.
         [Parameter(Mandatory=$false, 
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
-        [UInt64[]]$DropletID
+        [UInt64]$DropletID
     )
 
     Begin
@@ -119,50 +119,39 @@
         {
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
+        [PSObject]$doReturnInfo = @()
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
-        [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
+        [Uri]$doApiUri = "https://api.digitalocean.com/v2/droplets/$DropletID/"
+        [Uri]$doApiUriWithKernel = '{0}{1}' -f $doApiUri,'kernels'
+        [Uri]$doApiUriWithAction = '{0}{1}' -f $doApiUri,'actions'
+        [Uri]$doApiUriWithBackup = '{0}{1}' -f $doApiUri,'backups'
+        [Uri]$doApiUriWithSnapshot = '{0}{1}' -f $doApiUri,'snapshots'
     }
     Process
     {
-        if(-not $DropletID)
+        try
         {
-            try
-            {
-                $doReturnInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
-            }
-            catch
-            {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Could not pull the droplet information.`n`r$errorDetail"
-            }
+            $doKernelInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithKernel -Headers $sessionHeaders -ErrorAction Stop
+            $doActionInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithAction -Headers $sessionHeaders -ErrorAction Stop
+            $doBackupInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithBackup -Headers $sessionHeaders -ErrorAction Stop
+            $doSnapshotInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithSnapshot -Headers $sessionHeaders -ErrorAction Stop
         }
-        else
+        catch
         {
-            $doReturnInfo = @()
-            foreach($droplet in $DropletID)
-            {
-                try
-                {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
-                    $doReturnInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
-                }
-                catch
-                {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Could not pull the droplet information for $droplet.`n`r$errorDetail"
-                }
-            }
+            $errorDetail = $_.Exception.Message
+            Write-Warning "Could not pull droplet property information.`n`r$errorDetail"
         }
+
+        $doReturnInfo = @(
+            $doKernelInfo.kernels,
+            $doActionInfo.actions,
+            $doBackupInfo.backups,
+            $doSnapshotInfo.snapshots
+        )
+        #$doReturnInfo = New-Object -TypeName PSObject -Property $doInfo
     }
     End
     {
-        if(-not $DropletID)
-        {
-            Write-Output $doReturnInfo.droplets
-        }
-        else
-        {
-            Write-Output $doReturnInfo.droplet
-        }
+        Write-Output $doReturnInfo
     }
 }

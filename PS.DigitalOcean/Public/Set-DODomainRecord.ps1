@@ -75,7 +75,7 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey = $global:SavedDOAPIKey,
+        [String]$APIKey = $script:SavedDOAPIKey,
         # Used to specify the name of the domain name to create the record under.
         [Parameter(Mandatory=$true,
                    Position=1)]

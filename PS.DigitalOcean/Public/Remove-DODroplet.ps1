@@ -40,7 +40,7 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey = $global:SavedDOAPIKey,
+        [String]$APIKey = $script:SavedDOAPIKey,
         # Used to specify the name of the domain name to delete.
         [Parameter(Mandatory=$true, 
                    Position=1)]
@@ -78,6 +78,5 @@
     }
     End
     {
-        Write-Output $doReturnInfo
     }
 }

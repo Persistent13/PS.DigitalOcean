@@ -86,7 +86,7 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey = $global:SavedDOAPIKey,
+        [String]$APIKey = $script:SavedDOAPIKey,
         # Used to get a specific action with the action ID.
         [Parameter(Mandatory=$false, 
                    Position=1)]

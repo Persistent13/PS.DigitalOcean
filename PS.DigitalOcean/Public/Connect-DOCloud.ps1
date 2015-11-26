@@ -57,7 +57,7 @@
         try
         {
             $doReturnInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
-            $global:SavedDOAPIKey = $APIKey
+            $script:SavedDOAPIKey = $APIKey
         }
         catch
         {
@@ -67,6 +67,6 @@
     }
     End
     {
-        Write-Output $doReturnInfo.account | Select-Object -Property email, status
+        Write-Output $doReturnInfo.account
     }
 }

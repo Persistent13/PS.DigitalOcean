@@ -43,7 +43,7 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
-        [String]$APIKey = $global:SavedDOAPIKey
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
