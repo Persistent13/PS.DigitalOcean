@@ -80,20 +80,20 @@
     [OutputType([PSCustomObject])]
     Param
     (
-        # API key to access account.
+        # Used to get a specific action with the action ID.
         [Parameter(Mandatory=$false, 
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Alias('Key','Token')]
-        [String]$APIKey = $script:SavedDOAPIKey,
-        # Used to get a specific action with the action ID.
+        [Alias('ID')]
+        [UInt64[]]$ActionID,
+        # API key to access account.
         [Parameter(Mandatory=$false, 
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Alias('ID')]
-        [UInt64[]]$ActionID
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
