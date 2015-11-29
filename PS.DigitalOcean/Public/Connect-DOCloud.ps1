@@ -29,7 +29,7 @@
    PS.DigitalOcean
 #>
     [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+                   PositionalBinding=$true)]
     [Alias('cdoc')]
     [OutputType()]
     Param
@@ -61,8 +61,16 @@
         }
         catch
         {
-            Write-Error -Exception 'Unable to authenticate with given APIKey.' `
-                -Message 'Unable to authenticate with given APIKey.' -Category AuthenticationError
+            if(Test-Connection -ComputerName $doApiUri.DnsSafeHost -Port $doApiUri.Port)
+            {
+                Write-Error -Exception 'Unable to authenticate with given APIKey.' `
+                    -Message 'Unable to authenticate with given APIKey.' -Category AuthenticationError
+            }
+            else
+            {
+                Write-Error -Exception "Cannot reach $doApiUri please check connecitvity." `
+                    -Message "Cannot reach $doApiUri please check connecitvity." -Category ConnectionError
+            }
         }
     }
     End
