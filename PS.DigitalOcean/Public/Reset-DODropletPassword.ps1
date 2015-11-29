@@ -1,0 +1,122 @@
+function Reset-DODropletPassword
+{
+<#
+.Synopsis
+   The Reset-DODropletPassword cmdlet is used to reset the root password for a droplet in the Digital Ocean cloud.
+.DESCRIPTION
+   The Reset-DODropletPassword cmdlet is used to reset the root password for a droplet in the Digital Ocean cloud.
+
+   An API key is required to use this cmdlet.
+.EXAMPLE
+   Reset-DODropletPassword -DropleID 3164450
+
+   id            : 36804748
+   status        : in-progress
+   type          : reboot
+   started_at    : 2014-11-14T16:31:00Z
+   completed_at  :
+   resource_id   : 3164450
+   resource_type : droplet
+   region        : nyc3
+   region_slug   : nyc3
+
+   The example above restart the droplet resulting in a graceful shutdown.
+   The action object preforming the work is returned with status information.
+
+.EXAMPLE
+   PS C:\>Reset-DODropletPassword -DropletID 3164450 -Reset
+
+   id            : 36804749
+   status        : in-progress
+   type          : power_cycle
+   started_at    : 2014-11-14T16:31:03Z
+   completed_at  :
+   resource_id   : 3164450
+   resource_type : droplet
+   region        : nyc3
+   region_slug   : nyc3
+
+   The example above power cycles the droplet resulting in a non-graceful reboot, like pressing the reset button on a physical computer.
+   The action object preforming the work is returned with status information.
+
+.INPUTS
+   System.String
+        
+       This cmdlet can use the APIKey to authenticate independent from Connect-DOCloud.
+
+   System.UInt16
+
+       This cmdlet requires the droplet ID to be passed as 64-bit, unsiged integer.
+.OUTPUTS
+   System.Management.Automation.PSCustomObject
+
+       A custome PSObject holding the action info is returned.
+.ROLE
+   PS.DigitalOcean
+.FUNCTIONALITY
+   PS.DigitalOcean
+#>
+    [CmdletBinding(SupportsShouldProcess=$true,
+                   ConfirmImpact='Low',
+                   PositionalBinding=$true)]
+    [Alias('rdodp')]
+    [OutputType([PSCustomObject])]
+    Param
+    (
+        # Used to specify the name of the droplet.
+        [Parameter(Mandatory=$true,
+                   ValueFromPipeline=$true,
+                   Position=0)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [UInt64[]]$DropletID,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
+                   Position=1)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Switch]$Force,
+        # API key to access account.
+        [Parameter(Mandatory=$false,
+                   Position=2)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
+    )
+
+    Begin
+    {
+        if(-not $APIKey)
+        {
+            throw 'Use Connect-DOCloud to specifiy the API key.'
+        }
+        [String]$sessionBody = @{'type'='password_reset'} | ConvertTo-Json
+        [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
+        [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
+    }
+    Process
+    {
+        $doReturnInfo = @()
+        foreach($droplet in $DropletID)
+        {
+            if($Force -or $PSCmdlet.ShouldProcess("Resetting root password for droplet ID: $droplet."))
+            {
+                try
+                {
+                    $doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
+                    $doReturnInfo += Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                }
+                catch
+                {
+                    $errorDetail = $_.Exception.Message
+                    Write-Warning "Unable to restart the $droplet droplet.`n`r$errorDetail"
+                }
+            }
+        }
+    }
+    End
+    {
+        Write-Output $doReturnInfo.action
+    }
+}
