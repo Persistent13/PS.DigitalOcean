@@ -56,25 +56,24 @@
     {
         try
         {
-            $doReturnInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
+            $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
             $script:SavedDOAPIKey = $APIKey
+            $doReturnInfo = [PSCustomObject]@{
+                'Droplet Limit' = $doInfo.account.droplet_limit
+                'Floating IP Limit' = $doInfo.account.floating_ip_limit
+                'Email' = $doInfo.account.email
+                'UUID' = $doInfo.account.uuid
+                'Email Verified' = $doInfo.account.email_verified
+                'Status' = $doInfo.account.status
+                'Status Message' = $doInfo.account.status_message
+            }
+            # DoReturnInfo is returned after Add-ObjectDetail is processed.
+            Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Account.Info'
         }
         catch
         {
-            if(Test-Connection -ComputerName $doApiUri.DnsSafeHost -Port $doApiUri.Port)
-            {
-                Write-Error -Exception 'Unable to authenticate with given APIKey.' `
-                    -Message 'Unable to authenticate with given APIKey.' -Category AuthenticationError
-            }
-            else
-            {
-                Write-Error -Exception "Cannot reach $doApiUri please check connecitvity." `
-                    -Message "Cannot reach $doApiUri please check connecitvity." -Category ConnectionError
-            }
+            Write-Error -Exception 'Unable to authenticate with given APIKey.' `
+                -Message 'Unable to authenticate with given APIKey.' -Category AuthenticationError
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.account
     }
 }
