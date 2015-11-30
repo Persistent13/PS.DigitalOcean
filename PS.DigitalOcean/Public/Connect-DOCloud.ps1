@@ -59,13 +59,13 @@
             $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
             $script:SavedDOAPIKey = $APIKey
             $doReturnInfo = [PSCustomObject]@{
-                'Droplet Limit' = $doInfo.account.droplet_limit
-                'Floating IP Limit' = $doInfo.account.floating_ip_limit
+                'DropletLimit' = $doInfo.account.droplet_limit
+                'FloatingIPLimit' = $doInfo.account.floating_ip_limit
                 'Email' = $doInfo.account.email
                 'UUID' = $doInfo.account.uuid
-                'Email Verified' = $doInfo.account.email_verified
+                'EmailVerified' = $doInfo.account.email_verified
                 'Status' = $doInfo.account.status
-                'Status Message' = $doInfo.account.status_message
+                'StatusMessage' = $doInfo.account.status_message
             }
             # DoReturnInfo is returned after Add-ObjectDetail is processed.
             Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Account.Info'

@@ -85,7 +85,7 @@
 .OUTPUTS
    System.Management.Automation.PSCustomObject
 
-       A custome PSObject holding the account info is returned.
+       A custome PSObject holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -111,7 +111,7 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
-        # API key to access account.
+        # API key to access action.
         [Parameter(Mandatory=$false, 
                    Position=2)]
         [ValidateNotNull()]
@@ -139,7 +139,18 @@
                 try
                 {
                     $doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
-                    $doReturnInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                    $doReturnInfo += [PSCustomObject]@{
+                        'ActionID' = $doInfo.action.id
+                        'Status' = $doInfo.action.status
+                        'Type' = $doInfo.action.type
+                        'StartedAt' = $doInfo.action.started_at
+                        'CompletedAt' = $doInfo.action.completed_at
+                        'ResourceID' = $doInfo.action.resource_id
+                        'ResourceType' = $doInfo.action.resource_type
+                        'RegionSlug' = $doInfo.action.region_slug
+                    }
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action.Info'
                 }
                 catch
                 {
