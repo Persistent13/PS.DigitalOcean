@@ -132,6 +132,8 @@
     }
     Process
     {
+        $doInfo = @()
+        $doReturnInfo = @()
         foreach($droplet in $DropletID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Disabling backups for $droplet."))

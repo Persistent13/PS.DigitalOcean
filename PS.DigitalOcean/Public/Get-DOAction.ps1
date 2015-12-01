@@ -195,6 +195,7 @@
         }
         else
         {
+            $doInfo = @()
             $doReturnInfo = @()
             foreach($id in $ActionID)
             {

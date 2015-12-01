@@ -83,9 +83,9 @@
         
        This cmdlet requires the droplet ID to be passed as a 64-bit, unsiged integer.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Droplet
 
-       A custome PSObject holding the account info is returned.
+       A custome PS.DigitalOcean.Droplet object holding the droplet info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -94,7 +94,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdovm')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.Droplet])]
     Param
     (
         # API key to access account.
@@ -129,6 +129,29 @@
             try
             {
                 $doReturnInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                foreach($info in $doInfo.droplets)
+                {
+                    $doReturnInfo = [PSCustomObject]@{
+                        'DropletID' = $info.id
+                        'Name' = $info.name
+                        'Memory' = $info.memory
+                        'CPU' = $info.vcpus
+                        'DiskGB' = $info.disk
+                        'Locked' = $info.locked
+                        'Status' = $info.status
+                        'CreatedAt' = $info.created_at
+                        'Features' = $info.features
+                        'Kernel' = $info.kernel
+                        'NextBackupWindow' = $info.next_backup_window
+                        'BackupID' = $info.backup_ids
+                        'SnapshotID' = $info.snapshot_ids
+                        'Image' = $info.image
+                        'Size' = $info.size_slug
+                        'Network' = $info.networks
+                        'Region' = $info.region
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
             }
             catch
             {
@@ -138,13 +161,35 @@
         }
         else
         {
+            $doInfo = @()
             $doReturnInfo = @()
             foreach($droplet in $DropletID)
             {
                 try
                 {
                     $doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
-                    $doReturnInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                    $doReturnInfo += [PSCustomObject]@{
+                        'DropletID' = $info.droplet.id
+                        'Name' = $info.droplet.name
+                        'Memory' = $info.droplet.memory
+                        'CPU' = $info.droplet.vcpus
+                        'DiskGB' = $info.droplet.disk
+                        'Locked' = $info.droplet.locked
+                        'Status' = $info.droplet.status
+                        'CreatedAt' = $info.droplet.created_at
+                        'Features' = $info.droplet.features
+                        'Kernel' = $info.droplet.kernel
+                        'NextBackupWindow' = $info.droplet.next_backup_window
+                        'BackupID' = $info.droplet.backup_ids
+                        'SnapshotID' = $info.droplet.snapshot_ids
+                        'Image' = $info.droplet.image
+                        'Size' = $info.droplet.size_slug
+                        'Network' = $info.droplet.networks
+                        'Region' = $info.droplet.region
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
                 }
                 catch
                 {
@@ -152,17 +197,6 @@
                     Write-Warning "Could not pull the droplet information for $droplet.`n`r$errorDetail"
                 }
             }
-        }
-    }
-    End
-    {
-        if(-not $DropletID)
-        {
-            Write-Output $doReturnInfo.droplets
-        }
-        else
-        {
-            Write-Output $doReturnInfo.droplet
         }
     }
 }

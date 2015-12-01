@@ -78,9 +78,9 @@
    
        This cmdlet requires the domain record ID to be passed as an unsigned, 64-bit interger.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.DomainRecord
 
-       A custome PSObject holding the domain info is returned.
+       A custome PS.DigitalOcean.DomainRecord holding the domain record info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -89,7 +89,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdod')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.DomainRecord])]
     Param
     (
         # API key to access account.
@@ -130,6 +130,20 @@
             try
             {
                 $doReturnInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                foreach($info in $doInfo.domain_records)
+                {
+                    $doReturnInfo = [PSCustomObject]@{
+                        'ID' = $info.id
+                        'Type' = $info.type
+                        'Name' = $info.name
+                        'Data' = $info.data
+                        'Priority' = $info.priority
+                        'Port' = $info.port
+                        'Weight' = $info.weight
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.DomainRecord'
+                }
             }
             catch
             {
@@ -139,13 +153,25 @@
         }
         else
         {
+            $doInfo = @()
             $doReturnInfo = @()
             foreach($record in $DomainRecordID)
             {
                 try
                 {
                     $doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
-                    $doReturnInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithRecord -Headers $sessionHeaders -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithRecord -Headers $sessionHeaders -ErrorAction Stop
+                    $doReturnInfo += [PSCustomObject]@{
+                        'ID' = $doInfo.domain_record.id
+                        'Type' = $doInfo.domain_record.type
+                        'Name' = $doInfo.domain_record.name
+                        'Data' = $doInfo.domain_record.data
+                        'Priority' = $doInfo.domain_record.priority
+                        'Port' = $doInfo.domain_record.port
+                        'Weight' = $doInfo.domain_record.weight
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.DomainRecord'
                 }
                 catch
                 {
@@ -153,17 +179,6 @@
                     Write-Warning "Could not find any domain information for $record.`n`r$errorDetail"
                 }
             }
-        }
-    }
-    End
-    {
-        if(-not $DomainRecordID)
-        {
-            Write-Output $doReturnInfo.domain_records
-        }
-        else
-        {
-            Write-Output $doReturnInfo.domain_record
         }
     }
 }

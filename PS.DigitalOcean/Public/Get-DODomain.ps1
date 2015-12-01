@@ -34,9 +34,9 @@
         
        This cmdlet requires the API key and domain names to be passed as strings.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Domain
 
-       A custome PSObject holding the domain info is returned.
+       A custome PS.DigitalOcean.Domain holding the domain info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -45,7 +45,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdod')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.Domain])]
     Param
     (
         # API key to access account.
@@ -78,7 +78,17 @@
         {
             try
             {
-                $doReturnInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                foreach($info in $doInfo.domains)
+                {
+                    $doReturnInfo = [PSCustomObject]@{
+                        'Name' = $info.name
+                        'TTL' = $info.ttl
+                        'ZoneFile' = $info.zone_file
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Domain'
+                }
             }
             catch
             {
@@ -88,13 +98,21 @@
         }
         else
         {
+            $doInfo = @()
             $doReturnInfo = @()
             foreach($domain in $DomainName)
             {
                 try
                 {
                     $doApiUriWithDomain = '{0}{1}' -f $doApiUri,$domain
-                    $doReturnInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
+                    $doReturnInfo += [PSCustomObject]@{
+                        'Name' = $doInfo.domain.name
+                        'TTL' = $doInfo.domain.ttl
+                        'ZoneFile' = $doInfo.domain.zone_file
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Domain'
                 }
                 catch
                 {
@@ -102,17 +120,6 @@
                     Write-Warning "Could not find any domain information for $domain.`n`r$errorDetail"
                 }
             }
-        }
-    }
-    End
-    {
-        if(-not $DomainName)
-        {
-            Write-Output $doReturnInfo.domains
-        }
-        else
-        {
-            Write-Output $doReturnInfo.domain
         }
     }
 }
