@@ -2,7 +2,13 @@
 <Configuration>
   <ViewDefinitions>
     <View>
-      <Name></Name>
+      <Name>PS.DigitalOcean.Actions</Name>
+      <ViewSelectedBy>
+        <TypeName>PS.DigitalOcean.Actions</TypeName>
+        <TableControl>
+          
+        </TableControl>
+      </ViewSelectedBy>
     </View>
   </ViewDefinitions>
 </Configuration>

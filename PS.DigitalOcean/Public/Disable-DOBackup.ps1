@@ -148,9 +148,10 @@
                         'CompletedAt' = $doInfo.action.completed_at
                         'ResourceID' = $doInfo.action.resource_id
                         'ResourceType' = $doInfo.action.resource_type
-                        'RegionSlug' = $doInfo.action.region_slug
+                        'Region' = $doInfo.action.region_slug
                     }
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action.Info'
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
                 }
                 catch
                 {
@@ -159,9 +160,5 @@
                 }
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.action
     }
 }

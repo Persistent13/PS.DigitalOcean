@@ -10,15 +10,14 @@ function Reset-DODropletPassword
 .EXAMPLE
    Reset-DODropletPassword -DropleID 3164450
 
-   id            : 36804748
-   status        : in-progress
-   type          : reboot
-   started_at    : 2014-11-14T16:31:00Z
-   completed_at  :
-   resource_id   : 3164450
-   resource_type : droplet
-   region        : nyc3
-   region_slug   : nyc3
+   ActionID      : 36804748
+   Status        : in-progress
+   Type          : reboot
+   StartedAt     : 2014-11-14T16:31:00Z
+   CompletedAt   :
+   ResourceID    : 3164450
+   ResourceType  : droplet
+   Region        : nyc3
 
    The example above restart the droplet resulting in a graceful shutdown.
    The action object preforming the work is returned with status information.
@@ -26,15 +25,14 @@ function Reset-DODropletPassword
 .EXAMPLE
    PS C:\>Reset-DODropletPassword -DropletID 3164450 -Reset
 
-   id            : 36804749
-   status        : in-progress
-   type          : power_cycle
-   started_at    : 2014-11-14T16:31:03Z
-   completed_at  :
-   resource_id   : 3164450
-   resource_type : droplet
-   region        : nyc3
-   region_slug   : nyc3
+   ActionID      : 36804749
+   Status        : in-progress
+   Type          : power_cycle
+   StartedAt     : 2014-11-14T16:31:03Z
+   CompletedAt   :
+   ResourceID    : 3164450
+   ResourceType  : droplet
+   Region        : nyc3
 
    The example above power cycles the droplet resulting in a non-graceful reboot, like pressing the reset button on a physical computer.
    The action object preforming the work is returned with status information.
@@ -48,9 +46,9 @@ function Reset-DODropletPassword
 
        This cmdlet requires the droplet ID to be passed as 64-bit, unsiged integer.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Action
 
-       A custome PSObject holding the action info is returned.
+       A PS.DigitalOcean.Action object holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -60,7 +58,7 @@ function Reset-DODropletPassword
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('rdodp')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.Action])]
     Param
     (
         # Used to specify the name of the droplet.
@@ -105,7 +103,19 @@ function Reset-DODropletPassword
                 try
                 {
                     $doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
-                    $doReturnInfo += Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doReturnInfo += [PSCustomObject]@{
+                        'ActionID' = $doInfo.action.id
+                        'Status' = $doInfo.action.status
+                        'Type' = $doInfo.action.type
+                        'StartedAt' = $doInfo.action.started_at
+                        'CompletedAt' = $doInfo.action.completed_at
+                        'ResourceID' = $doInfo.action.resource_id
+                        'ResourceType' = $doInfo.action.resource_type
+                        'Region' = $doInfo.action.region_slug
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
                 }
                 catch
                 {
@@ -114,9 +124,5 @@ function Reset-DODropletPassword
                 }
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.action
     }
 }

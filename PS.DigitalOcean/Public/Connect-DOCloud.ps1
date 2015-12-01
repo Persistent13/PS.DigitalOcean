@@ -22,7 +22,9 @@
         
        This cmdlet can take the API key as a string.
 .OUTPUTS
-   None
+   PS.DigitalOcean.Account
+   
+       A PS.DigitalOcean.Account object holding the account info is returned on a sucessful login.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -31,7 +33,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                    PositionalBinding=$true)]
     [Alias('cdoc')]
-    [OutputType()]
+    [OutputType([PS.DigitalOcean.Account])]
     Param
     (
         # API key to access account.
@@ -68,7 +70,7 @@
                 'StatusMessage' = $doInfo.account.status_message
             }
             # DoReturnInfo is returned after Add-ObjectDetail is processed.
-            Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Account.Info'
+            Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Account'
         }
         catch
         {
