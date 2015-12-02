@@ -36,7 +36,7 @@
 .OUTPUTS
    PS.DigitalOcean.Domain
 
-       A custome PS.DigitalOcean.Domain holding the domain info is returned.
+       A PS.DigitalOcean.Domain holding the domain info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY

@@ -113,7 +113,7 @@
 .OUTPUTS
    PS.DigitalOcean.Action
 
-       A custome PSObject holding the action info is returned.
+       A PS.DigitalOcean.Action object holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY

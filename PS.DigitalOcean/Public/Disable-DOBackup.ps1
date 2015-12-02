@@ -83,9 +83,9 @@
         
        This cmdlet requires the droplet ID to be passed as a 64-bit, unsiged integer.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Action
 
-       A custome PSObject holding the action info is returned.
+       A PS.DigitalOcean.Action object holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -95,7 +95,7 @@
                    ConfirmImpact='High',
                    PositionalBinding=$true)]
     [Alias('ddob')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.Action])]
     Param
     (
         # Uniqe ID of the Droplet.

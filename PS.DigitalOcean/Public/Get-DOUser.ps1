@@ -23,9 +23,9 @@
         
        This cmdlet requires the API key to be passed as a string.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Account
 
-       A custome PSObject holding the account info is returned.
+       A PS.DigitalOcean.Account object holding the account info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -34,7 +34,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdou')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.Account])]
     Param
     (
         # API key to access account.
@@ -59,16 +59,23 @@
     {
         try
         {
-            $doReturnInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+            $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+            $doReturnInfo = [PSCustomObject]@{
+                'DropletLimit' = $doInfo.account.droplet_limit
+                'FloatingIPLimit' = $doInfo.account.floating_ip_limit
+                'Email' = $doInfo.account.email
+                'UUID' = $doInfo.account.uuid
+                'EmailVerified' = $doInfo.account.email_verified
+                'Status' = $doInfo.account.status
+                'StatusMessage' = $doInfo.account.status_message
+            }
+            # DoReturnInfo is returned after Add-ObjectDetail is processed.
+            Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Account'
         }
         catch
         {
             $errorDetail = $_.Exception.Message
             Write-Warning "Could not pull user information for the bearer.`n`r$errorDetail"
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.account
     }
 }

@@ -85,7 +85,7 @@
 .OUTPUTS
    PS.DigitalOcean.Droplet
 
-       A custome PS.DigitalOcean.Droplet object holding the droplet info is returned.
+       A PS.DigitalOcean.Droplet object holding the droplet info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
