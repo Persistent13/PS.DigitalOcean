@@ -88,9 +88,9 @@
 
        This cmdlet requires the priority, port, and weigth to be passed as 16-bit, unsiged integers.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Droplet
 
-       A custome PSObject holding the domain info is returned.
+       A PS.DigitalOcean.Droplet object holding the domain info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -100,7 +100,7 @@
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('ndovm')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.Droplet])]
     Param
     (
         # Used to specify the name of the droplet.
@@ -234,14 +234,38 @@
     }
     Process
     {
-        $doReturnInfo = @()
+        $doInfo = @()
         foreach($droplet in $Name)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Droplet creation with Name: $droplet Image: $Image$ImageID Region: $Region Size: $Size SSH Key: $SSHKey Backups: $Backups IPv6: $IPv6 PrivateNetworking: $PrivateNetworking UserData: $UserData"))
             {
                 try
                 {
-                    $doReturnInfo += Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    foreach($info in $doInfo.droplets)
+                    {
+                        $doReturnInfo = [PSCustomObject]@{
+                            'DropletID' = $info.id
+                            'Name' = $info.name
+                            'Memory' = $info.memory
+                            'CPU' = $info.vcpus
+                            'DiskGB' = $info.disk
+                            'Locked' = $info.locked
+                            'Status' = $info.status
+                            'CreatedAt' = $info.created_at
+                            'Features' = $info.features
+                            'Kernel' = $info.kernel
+                            'NextBackupWindow' = $info.next_backup_window
+                            'BackupID' = $info.backup_ids
+                            'SnapshotID' = $info.snapshot_ids
+                            'Image' = $info.image
+                            'Size' = $info.size_slug
+                            'Network' = $info.networks
+                            'Region' = $info.region
+                        }
+                        # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                        Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                    }
                 }
                 catch
                 {
@@ -250,9 +274,5 @@
                 }
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.droplet
     }
 }

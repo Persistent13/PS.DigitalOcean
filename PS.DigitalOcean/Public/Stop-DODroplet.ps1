@@ -88,9 +88,9 @@ function Stop-DODroplet
 
        This cmdlet requires the priority, port, and weigth to be passed as 16-bit, unsiged integers.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Action
 
-       A custome PSObject holding the domain info is returned.
+       A PS.DigitalOcean.Action object holding the domain info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -99,8 +99,8 @@ function Stop-DODroplet
     [CmdletBinding(SupportsShouldProcess=$true,
                    ConfirmImpact='Medium',
                    PositionalBinding=$true)]
-    [Alias('ndovm')]
-    [OutputType([PSCustomObject])]
+    [Alias('sdovm')]
+    [OutputType([PS.DigitalOcean.Action])]
     Param
     (
         # Used to specify the name of the droplet.
@@ -151,7 +151,7 @@ function Stop-DODroplet
     }
     Process
     {
-        $doReturnInfo = @()
+        $doInfo = @()
         foreach($droplet in $DropletID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Stoping droplet ID: $droplet."))
@@ -159,7 +159,19 @@ function Stop-DODroplet
                 try
                 {
                     $doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
-                    $doReturnInfo += Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doReturnInfo += [PSCustomObject]@{
+                        'ActionID' = $doInfo.action.id
+                        'Status' = $doInfo.action.status
+                        'Type' = $doInfo.action.type
+                        'StartedAt' = $doInfo.action.started_at
+                        'CompletedAt' = $doInfo.action.completed_at
+                        'ResourceID' = $doInfo.action.resource_id
+                        'ResourceType' = $doInfo.action.resource_type
+                        'Region' = $doInfo.action.region_slug
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
                 }
                 catch
                 {
@@ -168,9 +180,5 @@ function Stop-DODroplet
                 }
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.action
     }
 }

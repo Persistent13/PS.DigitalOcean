@@ -56,9 +56,9 @@
 
        This cmdlet requires the priority, port, and weigth to be passed as 16-bit, unsiged integers.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.DomainRecord
 
-       A custome PSObject holding the domain info is returned.
+       A PS.DigitalOcean.DomainRecord object holding the domain record info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -68,7 +68,7 @@
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('ndodr')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.DomainRecord])]
     Param
     (
         # Used to specify the name of the domain name to create the record.
@@ -155,7 +155,18 @@
         {
             try
             {
-                $doReturnInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                $doReturnInfo = [PSCustomObject]@{
+                    'ID' = $doInfo.domain_record.id
+                    'Type' = $doInfo.domain_record.type
+                    'Name' = $doInfo.domain_record.name
+                    'Data' = $doInfo.domain_record.data
+                    'Priority' = $doInfo.domain_record.priority
+                    'Port' = $doInfo.domain_record.port
+                    'Weight' = $doInfo.domain_record.weight
+                }
+                # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.DomainRecord'
             }
             catch
             {
@@ -163,9 +174,5 @@
                 Write-Warning "Unable to create the domain record.`n`r$errorDetail"
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.domain_record
     }
 }

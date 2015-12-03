@@ -83,9 +83,9 @@ function Restore-DODropletSnapshot
         
        This cmdlet requires the droplet ID to be passed as a 64-bit, unsiged integer.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Action
 
-       A custome PSObject holding the account info is returned.
+       A PS.DigitalOcean.Action object holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -94,8 +94,8 @@ function Restore-DODropletSnapshot
     [CmdletBinding(SupportsShouldProcess=$true,
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
-    [Alias('rdodi')]
-    [OutputType([PSCustomObject])]
+    [Alias('rdovms')]
+    [OutputType([PS.DigitalOcean.Action])]
     Param
     (
         # Uniqe ID of the Droplet.
@@ -138,7 +138,7 @@ function Restore-DODropletSnapshot
     }
     Process
     {
-        $doReturnInfo = @()
+        $doInfo = @()
         foreach($droplet in $DropletID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Restoring image $Image for $droplet."))
@@ -146,7 +146,19 @@ function Restore-DODropletSnapshot
                 try
                 {
                     $doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
-                    $doReturnInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doReturnInfo += [PSCustomObject]@{
+                        'ActionID' = $doInfo.action.id
+                        'Status' = $doInfo.action.status
+                        'Type' = $doInfo.action.type
+                        'StartedAt' = $doInfo.action.started_at
+                        'CompletedAt' = $doInfo.action.completed_at
+                        'ResourceID' = $doInfo.action.resource_id
+                        'ResourceType' = $doInfo.action.resource_type
+                        'Region' = $doInfo.action.region_slug
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
                 }
                 catch
                 {
@@ -155,9 +167,5 @@ function Restore-DODropletSnapshot
                 }
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.action
     }
 }

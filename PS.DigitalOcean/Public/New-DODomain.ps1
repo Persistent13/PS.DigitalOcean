@@ -21,9 +21,9 @@
         
        This cmdlet requires the API key, domain name, and target to be passed as strings.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Domain
 
-       A custome PSObject holding the domain info is returned.
+       A PS.DigitalOcean.Domain object holding the domain info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -33,7 +33,7 @@
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('ndod')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.Domain])]
     Param
     (
         # Used to specify the name of the new domain name.
@@ -80,7 +80,14 @@
         {
             try
             {
-                $doReturnInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                $doReturnInfo = [PSCustomObject]@{
+                    'Name' = $doInfo.domain.name
+                    'TTL' = $doInfo.domain.ttl
+                    'ZoneFile' = $doInfo.domain.zone_file
+                }
+                # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Domain'
             }
             catch
             {
@@ -88,9 +95,5 @@
                 Write-Warning "Unable to create the domain.`n`r$errorDetail"
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.domain
     }
 }

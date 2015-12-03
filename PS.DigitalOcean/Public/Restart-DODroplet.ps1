@@ -48,9 +48,9 @@ function Restart-DODroplet
 
        This cmdlet requires the droplet ID to be passed as 64-bit, unsiged integer.
 .OUTPUTS
-   System.Management.Automation.PSCustomObject
+   PS.DigitalOcean.Action
 
-       A custome PSObject holding the action info is returned.
+       A PS.DigitalOcean.Action object holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -60,7 +60,7 @@ function Restart-DODroplet
                    ConfirmImpact='Medium',
                    PositionalBinding=$true)]
     [Alias('ndovm')]
-    [OutputType([PSCustomObject])]
+    [OutputType([PS.DigitalOcean.Action])]
     Param
     (
         # Used to specify the name of the droplet.
@@ -110,7 +110,7 @@ function Restart-DODroplet
     }
     Process
     {
-        $doReturnInfo = @()
+        $doInfo = @()
         foreach($droplet in $DropletID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Restarting droplet ID: $droplet."))
@@ -118,7 +118,19 @@ function Restart-DODroplet
                 try
                 {
                     $doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
-                    $doReturnInfo += Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doInfo += Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doReturnInfo += [PSCustomObject]@{
+                        'ActionID' = $doInfo.action.id
+                        'Status' = $doInfo.action.status
+                        'Type' = $doInfo.action.type
+                        'StartedAt' = $doInfo.action.started_at
+                        'CompletedAt' = $doInfo.action.completed_at
+                        'ResourceID' = $doInfo.action.resource_id
+                        'ResourceType' = $doInfo.action.resource_type
+                        'Region' = $doInfo.action.region_slug
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
                 }
                 catch
                 {
@@ -127,9 +139,5 @@ function Restart-DODroplet
                 }
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.action
     }
 }

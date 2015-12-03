@@ -68,7 +68,6 @@
     }
     Process
     {
-        $doReturnInfo = @()
         foreach($droplet in $DropletID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Deleting: $droplet."))
@@ -76,7 +75,7 @@
                 try
                 {
                     $doApiUriWithDroplet = '{0}{1}' -f $doApiUri,$droplet
-                    $doReturnInfo += Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDroplet -Headers $sessionHeaders -ErrorAction Stop
+                    Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDroplet -Headers $sessionHeaders -ErrorAction Stop
                 }
                 catch
                 {
@@ -85,8 +84,5 @@
                 }
             }
         }
-    }
-    End
-    {
     }
 }

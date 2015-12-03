@@ -73,7 +73,6 @@
     }
     Process
     {
-        $doReturnInfo = @()
         foreach($domainID in $DomainRecordID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Deleting: $domainID"))
@@ -81,7 +80,7 @@
                 try
                 {
                     $doApiUriWithDomainID = '{0}{1}' -f $doApiUri,$domainID
-                    $doReturnInfo += Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDomainID -Headers $sessionHeaders -ErrorAction Stop
+                    Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDomainID -Headers $sessionHeaders -ErrorAction Stop
                 }
                 catch
                 {
@@ -90,9 +89,5 @@
                 }
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo
     }
 }
