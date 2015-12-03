@@ -152,6 +152,7 @@
                     }
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
                     Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                }
             }
             catch
             {
