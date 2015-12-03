@@ -58,7 +58,7 @@ function Reset-DODropletPassword
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('rdodp')]
-    [OutputType([PS.DigitalOcean.Action])]
+    [OutputType('PS.DigitalOcean.Action')]
     Param
     (
         # Used to specify the name of the droplet.

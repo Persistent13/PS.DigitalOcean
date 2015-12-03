@@ -89,7 +89,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdod')]
-    [OutputType([PS.DigitalOcean.DomainRecord])]
+    [OutputType('PS.DigitalOcean.DomainRecord')]
     Param
     (
         # API key to access account.

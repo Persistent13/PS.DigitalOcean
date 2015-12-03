@@ -68,7 +68,7 @@
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('ndodr')]
-    [OutputType([PS.DigitalOcean.DomainRecord])]
+    [OutputType('PS.DigitalOcean.DomainRecord')]
     Param
     (
         # Used to specify the name of the domain name to create the record.

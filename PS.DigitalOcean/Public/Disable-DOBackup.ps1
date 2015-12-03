@@ -95,7 +95,7 @@
                    ConfirmImpact='High',
                    PositionalBinding=$true)]
     [Alias('ddob')]
-    [OutputType([PS.DigitalOcean.Action])]
+    [OutputType('PS.DigitalOcean.Action')]
     Param
     (
         # Uniqe ID of the Droplet.

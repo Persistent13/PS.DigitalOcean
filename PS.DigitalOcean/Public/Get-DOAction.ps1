@@ -122,7 +122,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdoa')]
-    [OutputType([PS.DigitalOcean.Action])]
+    [OutputType('PS.DigitalOcean.Action')]
     Param
     (
         # Used to get a specific action with the action ID.

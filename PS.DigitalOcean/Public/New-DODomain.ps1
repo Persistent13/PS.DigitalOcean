@@ -33,7 +33,7 @@
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('ndod')]
-    [OutputType([PS.DigitalOcean.Domain])]
+    [OutputType('PS.DigitalOcean.Domain')]
     Param
     (
         # Used to specify the name of the new domain name.

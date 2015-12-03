@@ -95,7 +95,7 @@ function Restore-DODropletSnapshot
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('rdovms')]
-    [OutputType([PS.DigitalOcean.Action])]
+    [OutputType('PS.DigitalOcean.Action')]
     Param
     (
         # Uniqe ID of the Droplet.

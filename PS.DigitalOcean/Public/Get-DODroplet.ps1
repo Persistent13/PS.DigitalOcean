@@ -94,7 +94,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdovm')]
-    [OutputType([PS.DigitalOcean.Droplet])]
+    [OutputType('PS.DigitalOcean.Droplet')]
     Param
     (
         # API key to access account.

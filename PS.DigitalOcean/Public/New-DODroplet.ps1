@@ -100,7 +100,7 @@
                    ConfirmImpact='Low',
                    PositionalBinding=$true)]
     [Alias('ndovm')]
-    [OutputType([PS.DigitalOcean.Droplet])]
+    [OutputType('PS.DigitalOcean.Droplet')]
     Param
     (
         # Used to specify the name of the droplet.

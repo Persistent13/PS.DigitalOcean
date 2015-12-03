@@ -45,7 +45,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdod')]
-    [OutputType([PS.DigitalOcean.Domain])]
+    [OutputType('PS.DigitalOcean.Domain')]
     Param
     (
         # API key to access account.

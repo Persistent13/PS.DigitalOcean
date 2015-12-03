@@ -100,7 +100,7 @@ function Start-DODroplet
                    ConfirmImpact='Medium',
                    PositionalBinding=$true)]
     [Alias('stdovm')]
-    [OutputType([PSCustomObject])]
+    [OutputType('PS.DigitalOcean.Action')]
     Param
     (
         # Used to specify the name of the droplet.

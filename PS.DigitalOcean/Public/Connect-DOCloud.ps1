@@ -33,7 +33,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                    PositionalBinding=$true)]
     [Alias('cdoc')]
-    [OutputType([PS.DigitalOcean.Account])]
+    [OutputType('PS.DigitalOcean.Account')]
     Param
     (
         # API key to access account.

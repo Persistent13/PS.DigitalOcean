@@ -34,7 +34,7 @@
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdou')]
-    [OutputType([PS.DigitalOcean.Account])]
+    [OutputType('PS.DigitalOcean.Account')]
     Param
     (
         # API key to access account.
