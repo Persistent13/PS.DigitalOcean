@@ -75,7 +75,7 @@
                 try
                 {
                     $doApiUriWithDroplet = '{0}{1}' -f $doApiUri,$droplet
-                    [void]Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDroplet -Headers $sessionHeaders -ErrorAction Stop
+                    Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDroplet -Headers $sessionHeaders -ErrorAction Stop | Out-Null
                 }
                 catch
                 {
