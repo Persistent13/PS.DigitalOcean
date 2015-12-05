@@ -111,9 +111,9 @@ function Get-DODropletKernel
        
        This cmdlet requires the action ID to be passed as an unsigned, 16-bit interger.
 .OUTPUTS
-   PS.DigitalOcean.Backup
+   PS.DigitalOcean.Kernel
 
-       A PS.DigitalOcean.Backup object holding the action info is returned.
+       A PS.DigitalOcean.Kernel object holding the kernel info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -122,7 +122,7 @@ function Get-DODropletKernel
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdodk')]
-    [OutputType('PS.DigitalOcean.Backup')]
+    [OutputType('PS.DigitalOcean.Kernel')]
     Param
     (
         # Used to get a specific action with the action ID.
@@ -170,7 +170,7 @@ function Get-DODropletKernel
                     'Version' = $info.version
                 }
                 # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Backup'
+                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Kernel'
             }
         }
         catch

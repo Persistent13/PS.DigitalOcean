@@ -131,7 +131,8 @@
         [ValidateSet('centos-5-8-x32','centos-5-8-x64','centos-6-5-x32','centos-6-5-x64','coreos-beta',`
                      'debian-6-0-x32','debian-6-0-x64','debian-7-0-x32','debian-7-0-x64','debian-8-x32','debian-8-x64',`
                      'fedora-21-x64','fedora-22-x64','freebsd-10-1-x64','ubuntu-12-04-x32','ubuntu-12-04-x64',`
-                     'ubuntu-14-04-x32','ubuntu-14-04-x64','ubuntu-15-04-x32','ubuntu-15-04-x64')]
+                     'ubuntu-14-04-x32','ubuntu-14-04-x64','ubuntu-15-04-x32','ubuntu-15-04-x64','ubuntu-15-10-x32',`
+                     'ubuntu-15-10-x64')]
         [String]$Image,
         # Used to specify the image ID installed to the droplet.
         [Parameter(Mandatory=$false,

@@ -81,4 +81,49 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @account -MemberName EmailVerified
     Update-TypeData @account -MemberName Status
     Update-TypeData @account -MemberName StatusMessge
+    
+    #Adds kernel OutputType
+    $kernel = @{
+        MemberType = 'NoteProperty'
+        TypeName = 'PS.DigitalOcean.Kernel'
+        Value = $null
+    }
+    
+    Update-TypeData @kernel -MemberName KernelID
+    Update-TypeData @kernel -MemberName Name
+    Update-TypeData @kernel -MemberName Version
+    
+    #Adds backup OutputType
+    $backup = @{
+        MemberType = 'NoteProperty'
+        TypeName = 'PS.DigitalOcean.Backup'
+        Value = $null
+    }
+    
+    Update-TypeData @backup -MemberName BackupID
+    Update-TypeData @backup -MemberName Name
+    Update-TypeData @backup -MemberName Distribution
+    Update-TypeData @backup -MemberName Slug
+    Update-TypeData @backup -MemberName Public
+    Update-TypeData @backup -MemberName Region
+    Update-TypeData @backup -MemberName CreatedAt
+    Update-TypeData @backup -MemberName Type
+    Update-TypeData @backup -MemberName MinimumDiskSize
+    
+    #Adds snapshot OutputType
+    $snapshot = @{
+        MemberType = 'NoteProperty'
+        TypeName = 'PS.DigitalOcean.Snapshot'
+        Value = $null
+    }
+    
+    Update-TypeData @snapshot -MemberName SnapshotID
+    Update-TypeData @snapshot -MemberName Name
+    Update-TypeData @snapshot -MemberName Distribution
+    Update-TypeData @snapshot -MemberName Slug
+    Update-TypeData @snapshot -MemberName Public
+    Update-TypeData @snapshot -MemberName Region
+    Update-TypeData @snapshot -MemberName CreatedAt
+    Update-TypeData @snapshot -MemberName Type
+    Update-TypeData @snapshot -MemberName MinimumDiskSize
 }

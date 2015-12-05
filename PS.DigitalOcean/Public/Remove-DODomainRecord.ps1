@@ -80,7 +80,7 @@
                 try
                 {
                     $doApiUriWithDomainID = '{0}{1}' -f $doApiUri,$domainID
-                    Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDomainID -Headers $sessionHeaders -ErrorAction Stop
+                    [void]Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDomainID -Headers $sessionHeaders -ErrorAction Stop
                 }
                 catch
                 {

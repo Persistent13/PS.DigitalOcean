@@ -113,7 +113,7 @@ function Get-DODropletSnapshot
 .OUTPUTS
    PS.DigitalOcean.Snapshot
 
-       A PS.DigitalOcean.Snapshot object holding the action info is returned.
+       A PS.DigitalOcean.Snapshot object holding the snapshot info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -165,7 +165,7 @@ function Get-DODropletSnapshot
             foreach($info in $doInfo.snapshots)
             {
                 $doReturnInfo = [PSCustomObject]@{
-                    'BackupID' = $info.id
+                    'SnapshotID' = $info.id
                     'Name' = $info.name
                     'Distribution' = $info.distribution
                     'Slug' = $info.slug
