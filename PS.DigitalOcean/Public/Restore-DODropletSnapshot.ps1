@@ -138,7 +138,6 @@ function Restore-DODropletSnapshot
     }
     Process
     {
-        $doInfo = @()
         foreach($droplet in $DropletID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Restoring image $Image for $droplet."))
@@ -146,8 +145,8 @@ function Restore-DODropletSnapshot
                 try
                 {
                     $doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
-                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
-                    $doReturnInfo += [PSCustomObject]@{
+                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doReturnInfo = [PSCustomObject]@{
                         'ActionID' = $doInfo.action.id
                         'Status' = $doInfo.action.status
                         'Type' = $doInfo.action.type

@@ -110,7 +110,6 @@ function Restart-DODroplet
     }
     Process
     {
-        $doInfo = @()
         foreach($droplet in $DropletID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Restarting droplet ID: $droplet."))
@@ -118,8 +117,8 @@ function Restart-DODroplet
                 try
                 {
                     $doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
-                    $doInfo += Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
-                    $doReturnInfo += [PSCustomObject]@{
+                    $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doReturnInfo = [PSCustomObject]@{
                         'ActionID' = $doInfo.action.id
                         'Status' = $doInfo.action.status
                         'Type' = $doInfo.action.type

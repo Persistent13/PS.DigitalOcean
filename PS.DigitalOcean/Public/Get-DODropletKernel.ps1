@@ -1,4 +1,4 @@
-﻿function Get-DOAction
+function Get-DODropletKernel
 {
 <#
 .Synopsis
@@ -111,9 +111,9 @@
        
        This cmdlet requires the action ID to be passed as an unsigned, 16-bit interger.
 .OUTPUTS
-   PS.DigitalOcean.Action
+   PS.DigitalOcean.Backup
 
-       A PS.DigitalOcean.Action object holding the action info is returned.
+       A PS.DigitalOcean.Backup object holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -121,24 +121,24 @@
 #>
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
-    [Alias('gdoa')]
-    [OutputType('PS.DigitalOcean.Action')]
+    [Alias('gdodk')]
+    [OutputType('PS.DigitalOcean.Backup')]
     Param
     (
         # Used to get a specific action with the action ID.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$true, 
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
-        [UInt64[]]$ActionID,
+        [UInt64]$DropletID,
         # Used to override the default limit of 20.
         [Parameter(Mandatory=$false, 
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Total','Size')]
-        [UInt64]$Limit,
+        [UInt64[]]$Limit = 20,
         # API key to access account.
         [Parameter(Mandatory=$false, 
                    Position=2)]
@@ -155,71 +155,28 @@
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
-        if(-not $Limit)
-        {
-            [Uri]$doApiUri = 'https://api.digitalocean.com/v2/actions/'
-        }
-        else
-        {
-            [Uri]$doApiUri = "https://api.digitalocean.com/v2/actions?per_page=$Limit"
-        }
+        [Uri]$doApiUri = "https://api.digitalocean.com/v2/droplets/$DropletID/backups?per_page=$Limit"
     }
     Process
     {
-        if(-not $ActionID)
+        try
         {
-            try
+            $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+            foreach($info in $doInfo.kernels)
             {
-                $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
-                foreach($info in $doInfo.actions)
-                {
-                    $doReturnInfo = [PSCustomObject]@{
-                        'ActionID' = $info.id
-                        'Status' = $info.status
-                        'Type' = $info.type
-                        'StartedAt' = $info.started_at
-                        'CompletedAt' = $info.completed_at
-                        'ResourceID' = $info.resource_id
-                        'ResourceType' = $info.resource_type
-                        'Region' = $info.region_slug
-                    }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
+                $doReturnInfo = [PSCustomObject]@{
+                    'KernelID' = $info.id
+                    'Name' = $info.name
+                    'Version' = $info.version
                 }
-            }
-            catch
-            {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Could not find any action information.`n`r$errorDetail"
+                # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Backup'
             }
         }
-        else
+        catch
         {
-            foreach($id in $ActionID)
-            {
-                try
-                {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,$id
-                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
-                    $doReturnInfo = [PSCustomObject]@{
-                        'ActionID' = $doInfo.action.id
-                        'Status' = $doInfo.action.status
-                        'Type' = $doInfo.action.type
-                        'StartedAt' = $doInfo.action.started_at
-                        'CompletedAt' = $doInfo.action.completed_at
-                        'ResourceID' = $doInfo.action.resource_id
-                        'ResourceType' = $doInfo.action.resource_type
-                        'Region' = $doInfo.action.region_slug
-                    }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
-                }
-                catch
-                {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Could not find any action information for ID $id.`n`r$errorDetail"
-                }
-            }
+            $errorDetail = $_.Exception.Message
+            Write-Warning "Could not find any action information.`n`r$errorDetail"
         }
     }
 }

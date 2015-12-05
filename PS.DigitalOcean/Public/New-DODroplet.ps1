@@ -108,7 +108,7 @@
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [String]$Name,
+        [String[]]$Name,
         # Used to specify the regin the droplet is created.
         [Parameter(Mandatory=$true,
                    Position=1)]
@@ -227,51 +227,44 @@
         {
             $sessionBodyBuild += @{'user_data'=$UserData}
         }
-        $sessionBodyBuild += @{'name'=$Name;'region'=$Region;'size'=$Size}
+        $sessionBodyBuild += @{'region'=$Region;'size'=$Size}
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [String]$sessionBody = $sessionBodyBuild | ConvertTo-Json
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
     Process
     {
-        $doInfo = @()
-        foreach($droplet in $Name)
+        if($Force -or $PSCmdlet.ShouldProcess("Droplet creation with Name: $droplet Image: $Image$ImageID Region: $Region Size: $Size SSH Key: $SSHKey Backups: $Backups IPv6: $IPv6 PrivateNetworking: $PrivateNetworking UserData: $UserData"))
         {
-            if($Force -or $PSCmdlet.ShouldProcess("Droplet creation with Name: $droplet Image: $Image$ImageID Region: $Region Size: $Size SSH Key: $SSHKey Backups: $Backups IPv6: $IPv6 PrivateNetworking: $PrivateNetworking UserData: $UserData"))
+            try
             {
-                try
-                {
-                    $doInfo += Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
-                    foreach($info in $doInfo.droplets)
-                    {
-                        $doReturnInfo = [PSCustomObject]@{
-                            'DropletID' = $info.id
-                            'Name' = $info.name
-                            'Memory' = $info.memory
-                            'CPU' = $info.vcpus
-                            'DiskGB' = $info.disk
-                            'Locked' = $info.locked
-                            'Status' = $info.status
-                            'CreatedAt' = $info.created_at
-                            'Features' = $info.features
-                            'Kernel' = $info.kernel
-                            'NextBackupWindow' = $info.next_backup_window
-                            'BackupID' = $info.backup_ids
-                            'SnapshotID' = $info.snapshot_ids
-                            'Image' = $info.image
-                            'Size' = $info.size_slug
-                            'Network' = $info.networks
-                            'Region' = $info.region
-                        }
-                        # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                        Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
-                    }
+                $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                $doReturnInfo = [PSCustomObject]@{
+                    'DropletID' = $doInfo.droplet.id
+                    'Name' = $doInfo.droplet.name
+                    'Memory' = $doInfo.droplet.memory
+                    'CPU' = $doInfo.droplet.vcpus
+                    'DiskGB' = $doInfo.droplet.disk
+                    'Locked' = $doInfo.droplet.locked
+                    'Status' = $doInfo.droplet.status
+                    'CreatedAt' = $doInfo.droplet.created_at
+                    'Features' = $doInfo.droplet.features
+                    'Kernel' = $doInfo.droplet.kernel
+                    'NextBackupWindow' = $doInfo.droplet.next_backup_window
+                    'BackupID' = $doInfo.droplet.backup_ids
+                    'SnapshotID' = $doInfo.droplet.snapshot_ids
+                    'Image' = $doInfo.droplet.image
+                    'Size' = $doInfo.droplet.size_slug
+                    'Network' = $doInfo.droplet.networks
+                    'Region' = $doInfo.droplet.region
                 }
-                catch
-                {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Unable to create the droplet.`n`r$errorDetail"
-                }
+                # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+            }
+            catch
+            {
+                $errorDetail = $_.Exception.Message
+                Write-Warning "Unable to create the droplet.`n`r$errorDetail"
             }
         }
     }

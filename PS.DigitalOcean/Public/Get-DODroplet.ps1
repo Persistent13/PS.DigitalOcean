@@ -128,7 +128,7 @@
         {
             try
             {
-                $doReturnInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
                 foreach($info in $doInfo.droplets)
                 {
                     $doReturnInfo = [PSCustomObject]@{
@@ -162,15 +162,14 @@
         }
         else
         {
-            $doInfo = @()
-            $doReturnInfo = @()
+
             foreach($droplet in $DropletID)
             {
                 try
                 {
                     $doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
-                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
-                    $doReturnInfo += [PSCustomObject]@{
+                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                    $doReturnInfo = [PSCustomObject]@{
                         'DropletID' = $info.droplet.id
                         'Name' = $info.droplet.name
                         'Memory' = $info.droplet.memory

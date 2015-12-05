@@ -1,4 +1,4 @@
-function Reset-DODropletPassword
+function Enable-DODropletBackup
 {
 <#
 .Synopsis
@@ -89,7 +89,7 @@ function Reset-DODropletPassword
         {
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
-        [String]$sessionBody = @{'type'='password_reset'} | ConvertTo-Json
+        [String]$sessionBody = @{'type'='enable_backups'} | ConvertTo-Json
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
@@ -97,7 +97,7 @@ function Reset-DODropletPassword
     {
         foreach($droplet in $DropletID)
         {
-            if($Force -or $PSCmdlet.ShouldProcess("Resetting root password for droplet ID: $droplet."))
+            if($Force -or $PSCmdlet.ShouldProcess("Enabling backups for droplet ID: $droplet."))
             {
                 try
                 {

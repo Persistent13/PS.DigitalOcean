@@ -98,15 +98,13 @@
         }
         else
         {
-            $doInfo = @()
-            $doReturnInfo = @()
             foreach($domain in $DomainName)
             {
                 try
                 {
                     $doApiUriWithDomain = '{0}{1}' -f $doApiUri,$domain
-                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
-                    $doReturnInfo += [PSCustomObject]@{
+                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
+                    $doReturnInfo = [PSCustomObject]@{
                         'Name' = $doInfo.domain.name
                         'TTL' = $doInfo.domain.ttl
                         'ZoneFile' = $doInfo.domain.zone_file

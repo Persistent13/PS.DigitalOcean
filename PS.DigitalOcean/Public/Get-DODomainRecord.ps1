@@ -153,15 +153,13 @@
         }
         else
         {
-            $doInfo = @()
-            $doReturnInfo = @()
             foreach($record in $DomainRecordID)
             {
                 try
                 {
                     $doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
-                    $doInfo += Invoke-RestMethod -Method GET -Uri $doApiUriWithRecord -Headers $sessionHeaders -ErrorAction Stop
-                    $doReturnInfo += [PSCustomObject]@{
+                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithRecord -Headers $sessionHeaders -ErrorAction Stop
+                    $doReturnInfo = [PSCustomObject]@{
                         'ID' = $doInfo.domain_record.id
                         'Type' = $doInfo.domain_record.type
                         'Name' = $doInfo.domain_record.name

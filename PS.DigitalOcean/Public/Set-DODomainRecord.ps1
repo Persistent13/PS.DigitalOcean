@@ -174,7 +174,6 @@
     }
     Process
     {
-        $doReturnInfo = @()
         foreach($record in $DomainRecordID)
         {
             if($Force -or $PSCmdlet.ShouldProcess("Update record: $record."))
@@ -182,18 +181,25 @@
                 try
                 {
                     $doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
-                    $doReturnInfo += Invoke-RestMethod -Method PUT -Uri $doApiUriWithRecord -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doInfo = Invoke-RestMethod -Method PUT -Uri $doApiUriWithRecord -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doReturnInfo = [PSCustomObject]@{
+                        'ID' = $doInfo.domain_record.id
+                        'Type' = $doInfo.domain_record.type
+                        'Name' = $doInfo.domain_record.name
+                        'Data' = $doInfo.domain_record.data
+                        'Priority' = $doInfo.domain_record.priority
+                        'Port' = $doInfo.domain_record.port
+                        'Weight' = $doInfo.domain_record.weight
+                    }
+                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.DomainRecord'
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message.Trim()
+                    $errorDetail = $_.Exception.Message
                     Write-Warning "Unable to update domain record $record.`n`r$errorDetail"
                 }
             }
         }
-    }
-    End
-    {
-        Write-Output $doReturnInfo.domain_record
     }
 }

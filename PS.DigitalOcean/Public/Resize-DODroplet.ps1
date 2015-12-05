@@ -1,4 +1,4 @@
-function Reset-DODropletPassword
+function Resize-DODroplet
 {
 <#
 .Synopsis
@@ -68,15 +68,28 @@ function Reset-DODropletPassword
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt64[]]$DropletID,
+        # Used to specify the size of the droplet.
+        [Parameter(Mandatory=$true,
+                   Position=1)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('512mb','1gb','2gb','4gb','8gb','16gb','32gb','48gb','64gb')]
+        [String]$Size,
         # Used to bypass confirmation prompts.
         [Parameter(Mandatory=$false,
-                   Position=1)]
+                   Position=2)]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Switch]$Permanent,
+        # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,
+                   Position=3)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
         [Parameter(Mandatory=$false,
-                   Position=2)]
+                   Position=4)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
@@ -89,7 +102,7 @@ function Reset-DODropletPassword
         {
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
-        [String]$sessionBody = @{'type'='password_reset'} | ConvertTo-Json
+        [String]$sessionBody = @{'type'='resize';'disk'=$Permanent;'size'=$Size} | ConvertTo-Json
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
@@ -97,7 +110,7 @@ function Reset-DODropletPassword
     {
         foreach($droplet in $DropletID)
         {
-            if($Force -or $PSCmdlet.ShouldProcess("Resetting root password for droplet ID: $droplet."))
+            if($Force -or $PSCmdlet.ShouldProcess("Enabling backups for droplet ID: $droplet."))
             {
                 try
                 {
