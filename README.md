@@ -1,5 +1,7 @@
 # Status #
 
+[![Join the chat at https://gitter.im/Persistent13/PS.DigitalOcean](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Persistent13/PS.DigitalOcean?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This module is currently in **pre-release** and does not yet offer all API functions.
 
 Once the module has moved to a full release this warning will be removed.
