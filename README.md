@@ -8,6 +8,8 @@ Once the module has moved to a full release this warning will be removed.
 
 ![Digital Ocean](/Media/digital-ocean-icon-sammy-powershell-horizontal.png)
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Persistent13/PS.DigitalOcean?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 # PS.DigitalOcean #
 
 PS.DigitalOcean is a PowerShell module used to interact with the Digital Ocean cloud API.
