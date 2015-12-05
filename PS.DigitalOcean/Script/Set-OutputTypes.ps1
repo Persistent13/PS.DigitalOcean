@@ -80,7 +80,7 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @account -MemberName UUID
     Update-TypeData @account -MemberName EmailVerified
     Update-TypeData @account -MemberName Status
-    Update-TypeData @account -MemberName StatusMessge
+    Update-TypeData @account -MemberName StatusMessage
     
     #Adds kernel OutputType
     $kernel = @{
