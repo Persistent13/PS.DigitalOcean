@@ -138,7 +138,7 @@
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Total','Size')]
-        [UInt64]$Limit,
+        [UInt64]$Limit = 20,
         # API key to access account.
         [Parameter(Mandatory=$false, 
                    Position=2)]
