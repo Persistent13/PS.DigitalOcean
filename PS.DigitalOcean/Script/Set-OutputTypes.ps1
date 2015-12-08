@@ -93,37 +93,20 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @kernel -MemberName Name
     Update-TypeData @kernel -MemberName Version
     
-    #Adds backup OutputType
-    $backup = @{
+    #Adds image OutputType
+    $image = @{
         MemberType = 'NoteProperty'
-        TypeName = 'PS.DigitalOcean.Backup'
+        TypeName = 'PS.DigitalOcean.Image'
         Value = $null
     }
     
-    Update-TypeData @backup -MemberName BackupID
-    Update-TypeData @backup -MemberName Name
-    Update-TypeData @backup -MemberName Distribution
-    Update-TypeData @backup -MemberName Slug
-    Update-TypeData @backup -MemberName Public
-    Update-TypeData @backup -MemberName Region
-    Update-TypeData @backup -MemberName CreatedAt
-    Update-TypeData @backup -MemberName Type
-    Update-TypeData @backup -MemberName MinimumDiskSize
-    
-    #Adds snapshot OutputType
-    $snapshot = @{
-        MemberType = 'NoteProperty'
-        TypeName = 'PS.DigitalOcean.Snapshot'
-        Value = $null
-    }
-    
-    Update-TypeData @snapshot -MemberName SnapshotID
-    Update-TypeData @snapshot -MemberName Name
-    Update-TypeData @snapshot -MemberName Distribution
-    Update-TypeData @snapshot -MemberName Slug
-    Update-TypeData @snapshot -MemberName Public
-    Update-TypeData @snapshot -MemberName Region
-    Update-TypeData @snapshot -MemberName CreatedAt
-    Update-TypeData @snapshot -MemberName Type
-    Update-TypeData @snapshot -MemberName MinimumDiskSize
+    Update-TypeData @image -MemberName ImageID
+    Update-TypeData @image -MemberName Name
+    Update-TypeData @image -MemberName Distribution
+    Update-TypeData @image -MemberName Slug
+    Update-TypeData @image -MemberName Public
+    Update-TypeData @image -MemberName Region
+    Update-TypeData @image -MemberName CreatedAt
+    Update-TypeData @image -MemberName Type
+    Update-TypeData @image -MemberName MinimumDiskSize
 }
