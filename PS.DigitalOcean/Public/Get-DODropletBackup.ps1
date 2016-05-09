@@ -111,9 +111,9 @@ function Get-DODropletBackup
        
        This cmdlet requires the action ID to be passed as an unsigned, 16-bit interger.
 .OUTPUTS
-   PS.DigitalOcean.Image
+   PS.DigitalOcean.Backup
 
-       A PS.DigitalOcean.Image object holding the image info is returned.
+       A PS.DigitalOcean.Backup object holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -122,7 +122,7 @@ function Get-DODropletBackup
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdodb')]
-    [OutputType('PS.DigitalOcean.Image')]
+    [OutputType('PS.DigitalOcean.Backup')]
     Param
     (
         # Used to get a specific action with the action ID.
@@ -176,7 +176,7 @@ function Get-DODropletBackup
                     'MinimumDiskSize' = $info.min_disk_size
                 }
                 # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
+                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Backup'
             }
         }
         catch

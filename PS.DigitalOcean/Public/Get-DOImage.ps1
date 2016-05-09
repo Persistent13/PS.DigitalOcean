@@ -111,9 +111,9 @@ function Get-DOImage
        
        This cmdlet requires the action ID to be passed as an unsigned, 16-bit interger.
 .OUTPUTS
-   PS.DigitalOcean.Action
+   PS.DigitalOcean.Snapshot
 
-       A PS.DigitalOcean.Action object holding the action info is returned.
+       A PS.DigitalOcean.Snapshot object holding the action info is returned.
 .ROLE
    PS.DigitalOcean
 .FUNCTIONALITY
@@ -122,7 +122,7 @@ function Get-DOImage
     [CmdletBinding(SupportsShouldProcess=$false,
                   PositionalBinding=$true)]
     [Alias('gdoa')]
-    [OutputType('PS.DigitalOcean.Action')]
+    [OutputType('PS.DigitalOcean.Snapshot')]
     Param
     (
         # Used to get a specific action with the action ID.
@@ -138,7 +138,7 @@ function Get-DOImage
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Total','Size')]
-        [UInt64]$Limit,
+        [UInt64]$Limit = 20,
         # API key to access account.
         [Parameter(Mandatory=$false, 
                    Position=2)]
@@ -185,7 +185,7 @@ function Get-DOImage
                         'MinimumDiskSize' = $info.min_disk_size
                     }
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Snapshot'
                 }
             }
             catch
@@ -214,7 +214,7 @@ function Get-DOImage
                         'MinimumDiskSize' = $doInfo.images.min_disk_size
                     }
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Snapshot'
                 }
                 catch
                 {
