@@ -119,8 +119,6 @@
         {
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
-        [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
-        [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
     Process
     {
@@ -128,21 +126,21 @@
         {
             try
             {
-                $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
-                foreach($info in $doInfo.droplets)
+                $doInfo = & "$PSScriptRoot\..\bin\doctl.exe" compute droplet list -t $APIKey -o json | ConvertFrom-Json
+                foreach($info in $doInfo)
                 {
                     $doReturnInfo = [PSCustomObject]@{
-                        'DropletID' = $info.id
+                        'DropletID' = [uint64]$info.id
                         'Name' = $info.name
                         'Memory' = $info.memory
                         'CPU' = $info.vcpus
                         'DiskGB' = $info.disk
                         'Locked' = $info.locked
                         'Status' = $info.status
-                        'CreatedAt' = $info.created_at
+                        'CreatedAt' = [datetime]$info.created_at
                         'Features' = $info.features
                         'Kernel' = $info.kernel
-                        'NextBackupWindow' = $info.next_backup_window
+                        'NextBackupWindow' = [datetime]$info.next_backup_window
                         'BackupID' = $info.backup_ids
                         'SnapshotID' = $info.snapshot_ids
                         'Image' = $info.image
@@ -162,13 +160,11 @@
         }
         else
         {
-
             foreach($droplet in $DropletID)
             {
                 try
                 {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
-                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                    $doInfo = ..\bin\doctl.exe compute droplet get $droplet -t $APIKey -o json | ConvertFrom-Json
                     $doReturnInfo = [PSCustomObject]@{
                         'DropletID' = $info.droplet.id
                         'Name' = $info.droplet.name
@@ -177,7 +173,7 @@
                         'DiskGB' = $info.droplet.disk
                         'Locked' = $info.droplet.locked
                         'Status' = $info.droplet.status
-                        'CreatedAt' = $info.droplet.created_at
+                        'CreatedAt' = [datetime]$info.droplet.created_at
                         'Features' = $info.droplet.features
                         'Kernel' = $info.droplet.kernel
                         'NextBackupWindow' = $info.droplet.next_backup_window

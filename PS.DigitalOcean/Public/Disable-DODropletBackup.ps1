@@ -90,7 +90,6 @@ function Disable-DODropletBackup
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
         [String]$sessionBody = @{'type'='enable_backups'} | ConvertTo-Json
-        [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
     Process
@@ -101,8 +100,7 @@ function Disable-DODropletBackup
             {
                 try
                 {
-                    $doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
-                    $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
+                    $doInfo = & "$PSScriptRoot\..\bin\doctl.exe" compute droplet-action disable-backups $droplet -t $APIKey -o json | ConvertFrom-Json
                     $doReturnInfo = [PSCustomObject]@{
                         'ActionID' = $doInfo.action.id
                         'Status' = $doInfo.action.status
