@@ -185,6 +185,51 @@
         [String]$APIKey = $script:SavedDOAPIKey
     )
 
+    DynamicParam {
+        $ParameterName = 'Size'
+        $RuntimeParameterDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::New()
+        $AttributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::New()
+        $ParameterAttribute = [System.Management.Automation.ParameterAttribute]::New()
+        $ParameterAttribute.Mandatory = $true
+        $ParameterAttribute.Position = 2
+        $AttributeCollection.Add($ParameterAttribute)
+        $arrSet = (Get-DOSize -APIKey $APIKey).Size
+        $ValidateSetAttribute = [System.Management.Automation.ValidateSetAttribute]::New($arrSet)
+        $AttributeCollection.Add($ValidateSetAttribute)
+        $RuntimeParameter = [System.Management.Automation.RuntimeDefinedParameter]::New($ParameterName, [string], $AttributeCollection)
+        $RuntimeParameterDictionary.Add($ParameterName, $RuntimeParameter)
+        return $RuntimeParameterDictionary
+
+        $ParameterName = 'Region'
+        $RuntimeParameterDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::New()
+        $AttributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::New()
+        $ParameterAttribute = [System.Management.Automation.ParameterAttribute]::New()
+        $ParameterAttribute.Mandatory = $true
+        $ParameterAttribute.Position = 3
+        $AttributeCollection.Add($ParameterAttribute)
+        $arrSet = (Get-DOSize -APIKey $APIKey).Region
+        $ValidateSetAttribute = [System.Management.Automation.ValidateSetAttribute]::New($arrSet)
+        $AttributeCollection.Add($ValidateSetAttribute)
+        $RuntimeParameter = [System.Management.Automation.RuntimeDefinedParameter]::New($ParameterName, [string], $AttributeCollection)
+        $RuntimeParameterDictionary.Add($ParameterName, $RuntimeParameter)
+        return $RuntimeParameterDictionary
+
+        $ParameterName = 'Image'
+        Get-DOImage -Limit ([Int]::MaxValue)
+        $RuntimeParameterDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::New()
+        $AttributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::New()
+        $ParameterAttribute = [System.Management.Automation.ParameterAttribute]::New()
+        $ParameterAttribute.Mandatory = $true
+        $ParameterAttribute.Position = 4
+        $AttributeCollection.Add($ParameterAttribute)
+        $arrSet = 
+        $ValidateSetAttribute = [System.Management.Automation.ValidateSetAttribute]::New($arrSet)
+        $AttributeCollection.Add($ValidateSetAttribute)
+        $RuntimeParameter = [System.Management.Automation.RuntimeDefinedParameter]::New($ParameterName, [string], $AttributeCollection)
+        $RuntimeParameterDictionary.Add($ParameterName, $RuntimeParameter)
+        return $RuntimeParameterDictionary
+    }
+
     Begin
     {
         if(-not $APIKey)
