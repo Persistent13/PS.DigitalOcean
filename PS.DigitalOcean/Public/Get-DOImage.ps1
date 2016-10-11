@@ -15,8 +15,8 @@ function Get-DOImage
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
-   CompletedAt  : 2014-11-14T16:30:06Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
+   CompletedAt  : Friday, November 14, 2014 8:30:06 AM
    ResourceID   : 3164444
    ResourceType : droplet
    Region       : nyc3
@@ -29,8 +29,8 @@ function Get-DOImage
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
-   CompletedAt  : 2014-11-14T16:30:06Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
+   CompletedAt  : Friday, November 14, 2014 8:30:06 AM
    ResourceID   : 3164444
    ResourceType : droplet
    Region       : nyc3
@@ -38,7 +38,7 @@ function Get-DOImage
    ActionID     : 36804637
    Status       : completed
    Type         : destroy
-   StartedAt    : 2014-11-14T16:32:11Z
+   StartedAt    : Friday, November 14, 2014 8:32:11 AM
    CompletedAt  : 2014-11-14T16:34:16Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -61,8 +61,8 @@ function Get-DOImage
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
-   CompletedAt  : 2014-11-14T16:30:06Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
+   CompletedAt  : Friday, November 14, 2014 8:30:06 AM
    ResourceID   : 3164444
    ResourceType : droplet
    Region       : nyc3
@@ -70,7 +70,7 @@ function Get-DOImage
    ActionID     : 36804637
    Status       : completed
    Type         : destroy
-   StartedAt    : 2014-11-14T16:32:11Z
+   StartedAt    : Friday, November 14, 2014 8:32:11 AM
    CompletedAt  : 2014-11-14T16:34:16Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -93,8 +93,8 @@ function Get-DOImage
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
-   CompletedAt  : 2014-11-14T16:30:06Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
+   CompletedAt  : Friday, November 14, 2014 8:30:06 AM
    ResourceID   : 3164444
    ResourceType : droplet
    Region       : nyc3
@@ -104,11 +104,11 @@ function Get-DOImage
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key to be passed as a string.
 
    System.UInt64
-       
+
        This cmdlet requires the action ID to be passed as an unsigned, 16-bit interger.
 .OUTPUTS
    PS.DigitalOcean.Snapshot
@@ -120,28 +120,58 @@ function Get-DOImage
    PS.DigitalOcean
 #>
     [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+                   PositionalBinding=$true,
+                   DefaultParameterSetName='All')]
     [Alias('gdoa')]
-    [OutputType('PS.DigitalOcean.Snapshot')]
+    [OutputType('PS.DigitalOcean.Image')]
     Param
     (
-        # Used to get a specific action with the action ID.
-        [Parameter(Mandatory=$false, 
-                   Position=0)]
+        # List only distribution images.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='Distribution')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Switch]$Distribution,
+        # List only application images.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='Application')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Switch]$Application,
+        # List only private, user create images.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='Private')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Switch]$Private,
+        # List only a specific image ID.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='ImageID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID','SnapshotID','BackupID')]
         [UInt64[]]$ImageID,
-        # Used to override the default limit of 20.
-        [Parameter(Mandatory=$false, 
-                   Position=1)]
+        # List only a specific image slug.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Alias('Total','Size')]
+        [Alias('Slug')]
+        [String[]]$ImageSlug,
+        # Used to override the default limit of 20.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='Distribution')]
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='Application')]
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='Private')]
+        [Parameter(Mandatory=$false,
+                   ParameterSetName='All')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
         [UInt64]$Limit = 20,
         # API key to access account.
-        [Parameter(Mandatory=$false, 
-                   Position=2)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
@@ -155,22 +185,37 @@ function Get-DOImage
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
-        if(-not $Limit)
+
+        switch($PSCmdlet.ParameterSetName)
         {
-            [Uri]$doApiUri = 'https://api.digitalocean.com/v2/images/'
-        }
-        else
-        {
-            [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?per_page=$Limit"
+            'Distribution' {
+                [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&distribution=true"
+            }
+            'Application' {
+                [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&application=true"
+            }
+            'Private' {
+                Write-Debug 'Using Private url.'
+                [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&private=true"
+            }
+            'ImageID' {
+                [UInt64[]]$image = $ImageID
+            }
+            'ImageSlug' {
+                [String[]]$image = $ImageSlug
+            }
+            Default {
+                [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit"
+            }
         }
     }
     Process
     {
-        if(-not $ImageID)
+        if(-not $ImageID -or -not $ImageSlug)
         {
             try
             {
-                $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
                 foreach($info in $doInfo.images)
                 {
                     $doReturnInfo = [PSCustomObject]@{
@@ -179,47 +224,49 @@ function Get-DOImage
                         'Distribution' = $info.distribution
                         'Slug' = $info.slug
                         'Public' = $info.public
-                        'Regions' = $info.regions
-                        'CreatedAt' = $info.created_at
+                        'Region' = $info.regions
+                        'CreatedAt' = [datetime]$info.created_at
                         'Type' = $info.type
                         'MinimumDiskSize' = $info.min_disk_size
+                        #'Index' = [Array]::IndexOf($doInfo.images,$info) + 1
+                        #Add the count in the ps1xml format!!!!
                     }
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Snapshot'
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
                 }
             }
             catch
             {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Could not find any action information.`n`r$errorDetail"
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                Write-Error $errorDetail.message
             }
         }
         else
         {
-            foreach($id in $ImageID)
+            foreach($i in $image)
             {
                 try
                 {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,$id
-                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                    [Uri]$doApiUri = "https://api.digitalocean.com/v2/images/$i"
+                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
                     $doReturnInfo = [PSCustomObject]@{
-                        'ImageID' = $doInfo.images.id
+                        'ImageID' = $doInfo.image.id
                         'Name' = $doInfo.images.name
-                        'Distribution' = $doInfo.images.distribution
-                        'Slug' = $doInfo.images.slug
-                        'Public' = $doInfo.images.public
-                        'Regions' = $doInfo.images.regions
-                        'CreatedAt' = $doInfo.images.created_at
-                        'Type' = $doInfo.images.type
-                        'MinimumDiskSize' = $doInfo.images.min_disk_size
+                        'Distribution' = $doInfo.image.distribution
+                        'Slug' = $doInfo.image.slug
+                        'Public' = $doInfo.image.public
+                        'Region' = $doInfo.image.regions
+                        'CreatedAt' = [datetime]$doInfo.image.created_at
+                        'Type' = $doInfo.image.type
+                        'MinimumDiskSize' = $doInfo.image.min_disk_size
                     }
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Snapshot'
+                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Could not find any action information for ID $id.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }
