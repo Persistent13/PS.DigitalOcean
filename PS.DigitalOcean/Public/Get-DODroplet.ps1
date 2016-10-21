@@ -22,9 +22,9 @@
    features     : {backups, ipv6, virtio}
    backup_ids   : {7938002}
    snapshot_ids : {}
-   image        : @{id=6918990; name=14.04 x64; distribution=Ubuntu; slug=ubuntu-14-04-x64; public=True; 
+   image        : @{id=6918990; name=14.04 x64; distribution=Ubuntu; slug=ubuntu-14-04-x64; public=True;
                   regions=System.Object[]; created_at=2014-10-17T20:24:33Z; type=snapshot; min_disk_size=20}
-   size         : 
+   size         :
    size_slug    : 512mb
    networks     : @{v4=System.Object[]; v6=System.Object[]}
    region       : @{name=New York 3; slug=nyc3; sizes=System.Object[]; features=System.Object[]; available=}
@@ -46,9 +46,9 @@
    features     : {backups, ipv6, virtio}
    backup_ids   : {7938002}
    snapshot_ids : {}
-   image        : @{id=6918990; name=14.04 x64; distribution=Ubuntu; slug=ubuntu-14-04-x64; public=True; 
+   image        : @{id=6918990; name=14.04 x64; distribution=Ubuntu; slug=ubuntu-14-04-x64; public=True;
                   regions=System.Object[]; created_at=2014-10-17T20:24:33Z; type=snapshot; min_disk_size=20}
-   size         : 
+   size         :
    size_slug    : 512mb
    networks     : @{v4=System.Object[]; v6=System.Object[]}
    region       : @{name=New York 3; slug=nyc3; sizes=System.Object[]; features=System.Object[]; available=}
@@ -65,9 +65,9 @@
    features     : {backups, ipv6, virtio}
    backup_ids   : {7938003}
    snapshot_ids : {}
-   image        : @{id=6918990; name=14.04 x64; distribution=Ubuntu; slug=ubuntu-14-04-x64; public=True; 
+   image        : @{id=6918990; name=14.04 x64; distribution=Ubuntu; slug=ubuntu-14-04-x64; public=True;
                   regions=System.Object[]; created_at=2014-10-17T20:24:33Z; type=snapshot; min_disk_size=20}
-   size         : 
+   size         :
    size_slug    : 512mb
    networks     : @{v4=System.Object[]; v6=System.Object[]}
    region       : @{name=New York 3; slug=nyc3; sizes=System.Object[]; features=System.Object[]; available=}
@@ -76,11 +76,11 @@
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key to be passed as a string.
 
    System.UInt64
-        
+
        This cmdlet requires the droplet ID to be passed as a 64-bit, unsiged integer.
 .OUTPUTS
    PS.DigitalOcean.Droplet
@@ -98,14 +98,14 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
         [String]$APIKey = $script:SavedDOAPIKey,
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -156,8 +156,8 @@
             }
             catch
             {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Could not pull the droplet information.`n`r$errorDetail"
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                Write-Error $errorDetail.message
             }
         }
         else
@@ -193,8 +193,8 @@
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Could not pull the droplet information for $droplet.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

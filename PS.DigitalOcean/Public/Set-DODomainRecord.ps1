@@ -48,7 +48,7 @@
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key to be passed as a string.
 
    System.UInt16
@@ -77,7 +77,7 @@
         [ValidateNotNullOrEmpty()]
         [String]$DomainName,
         # Used to get a specific domain record.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$true,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -196,8 +196,8 @@
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Unable to update domain record $record.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

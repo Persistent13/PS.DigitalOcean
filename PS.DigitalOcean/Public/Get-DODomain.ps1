@@ -10,8 +10,8 @@
 .EXAMPLE
    Get-DODomain -APIKey b7d03a6947b217efb6f3ec3bd3504582
 
-   name        ttl  zone_file                                                                                                                                   
-   ----        ---  ---------                                                                                                                                   
+   name        ttl  zone_file
+   ----        ---  ---------
    example.com 1800 $ORIGIN example.com....
 
    The example above returns all avaiable domain information for the current API bearer.
@@ -19,19 +19,19 @@
 .EXAMPLE
    PS C:\>Get-DODomain -APIKey b7d03a6947b217efb6f3ec3bd3504582 -DomainName example.com, example.org
 
-   name        ttl  zone_file                                                                                                                                   
-   ----        ---  ---------                                                                                                                                   
+   name        ttl  zone_file
+   ----        ---  ---------
    example.com 1800 $ORIGIN example.com....
 
-   name        ttl  zone_file                                                                                                                                   
-   ----        ---  ---------                                                                                                                                   
+   name        ttl  zone_file
+   ----        ---  ---------
    example.org 1800 $ORIGIN example.org....
 
    The example above returns the specfied domain information for the current API bearer if available.
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key and domain names to be passed as strings.
 .OUTPUTS
    PS.DigitalOcean.Domain
@@ -49,14 +49,14 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
         [String]$APIKey = $script:SavedDOAPIKey,
         # Used to get a specific domain with the domain name.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -92,8 +92,8 @@
             }
             catch
             {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Could not find any domain information.`n`r$errorDetail"
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                Write-Error $errorDetail.message
             }
         }
         else
@@ -114,8 +114,8 @@
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Could not find any domain information for $domain.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

@@ -19,7 +19,7 @@
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key and domain names to be passed as strings.
 .OUTPUTS
    None
@@ -36,13 +36,13 @@
     Param
     (
         # Used to specify the name of the domain name to delete.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$true,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$DomainName,
         # Used to specify the name of the domain name to delete.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$true,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -54,7 +54,7 @@
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=3)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -84,8 +84,8 @@
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Unable to delete the domain record.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

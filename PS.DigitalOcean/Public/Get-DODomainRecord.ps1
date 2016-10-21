@@ -14,33 +14,33 @@
    type     : NS
    name     : @
    data     : ns1.digitalocean.com
-   priority : 
-   port     : 
-   weight   : 
+   priority :
+   port     :
+   weight   :
 
    id       : 3352893
    type     : NS
    name     : @
    data     : ns2.digitalocean.com
-   priority : 
-   port     : 
-   weight   : 
+   priority :
+   port     :
+   weight   :
 
    id       : 3352894
    type     : NS
    name     : @
    data     : ns3.digitalocean.com
-   priority : 
-   port     : 
-   weight   : 
+   priority :
+   port     :
+   weight   :
 
    id       : 3352895
    type     : A
    name     : @
    data     : 1.2.3.4
-   priority : 
-   port     : 
-   weight   : 
+   priority :
+   port     :
+   weight   :
 
    The example above returns all avaiable domain records information on all domains for the current API bearer.
 
@@ -53,17 +53,17 @@
    type     : NS
    name     : @
    data     : ns3.digitalocean.com
-   priority : 
-   port     : 
-   weight   : 
+   priority :
+   port     :
+   weight   :
 
    id       : 3352895
    type     : A
    name     : @
    data     : 1.2.3.4
-   priority : 
-   port     : 
-   weight   : 
+   priority :
+   port     :
+   weight   :
 
    The example above returns the domain records information for the selected record IDs for the current API bearer.
 
@@ -71,11 +71,11 @@
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key and domain name to be passed as strings.
 
    System.UInt64
-   
+
        This cmdlet requires the domain record ID to be passed as an unsigned, 64-bit interger.
 .OUTPUTS
    PS.DigitalOcean.DomainRecord
@@ -93,20 +93,20 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
         [String]$APIKey = $script:SavedDOAPIKey,
         # Used to get a specific domain.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$true,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$DomainName,
         # Used to get a specific domain record.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=2)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -147,8 +147,8 @@
             }
             catch
             {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Could not find any record information for $DomainName.`n`r$errorDetail"
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                Write-Error $errorDetail.message
             }
         }
         else
@@ -173,8 +173,8 @@
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Could not find any domain information for $record.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

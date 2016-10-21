@@ -43,7 +43,7 @@
     The example above returns the information for the current API bearer.
 .INPUTS
     System.String
-        
+
        This cmdlet requires the API key to be passed as a string.
 .OUTPUTS
     PS.DigitalOcean.Account
@@ -61,7 +61,7 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -99,8 +99,8 @@
         }
         catch
         {
-            $errorDetail = $_.Exception.Message
-            Write-Warning "Could not pull user information for the bearer.`n`r$errorDetail"
+            $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+            Write-Error $errorDetail.message
         }
     }
 }

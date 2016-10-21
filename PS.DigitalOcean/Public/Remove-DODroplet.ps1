@@ -19,7 +19,7 @@
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key and domain names to be passed as strings.
 .OUTPUTS
    None
@@ -36,7 +36,7 @@
     Param
     (
         # Used to specify the name of the domain name to delete.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$true,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -49,7 +49,7 @@
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=2)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -79,8 +79,8 @@
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Unable to delete the droplet ID $droplet.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

@@ -81,7 +81,7 @@ function Start-DODroplet
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key, domain name, record type, target, and domain record to be passed as strings.
 
    System.UInt16
@@ -160,8 +160,8 @@ function Start-DODroplet
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Unable to start the $droplet droplet.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

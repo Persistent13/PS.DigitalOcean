@@ -19,11 +19,11 @@
 
 .INPUTS
    System.String
-        
+
        This cmdlet can take the API key as a string.
 .OUTPUTS
    PS.DigitalOcean.Account
-   
+
        A PS.DigitalOcean.Account object holding the account info is returned on a sucessful login.
 .ROLE
    PS.DigitalOcean
@@ -37,7 +37,7 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -74,8 +74,8 @@
         }
         catch
         {
-            Write-Error -Exception 'Unable to authenticate with given APIKey.' `
-                -Message 'Unable to authenticate with given APIKey.' -Category AuthenticationError
+            $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+            Write-Error $errorDetail.message
         }
     }
 }

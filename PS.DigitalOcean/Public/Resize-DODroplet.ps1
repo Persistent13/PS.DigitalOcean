@@ -39,7 +39,7 @@ function Resize-DODroplet
 
 .INPUTS
    System.String
-        
+
        This cmdlet can use the APIKey to authenticate independent from Connect-DOCloud.
 
    System.UInt16
@@ -131,8 +131,8 @@ function Resize-DODroplet
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Unable to restart the $droplet droplet.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

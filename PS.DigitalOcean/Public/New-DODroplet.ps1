@@ -81,7 +81,7 @@
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key, domain name, record type, target, and domain record to be passed as strings.
 
    System.UInt16
@@ -222,7 +222,7 @@
         $ParameterAttribute.Mandatory = $true
         $ParameterAttribute.Position = 4
         $AttributeCollection.Add($ParameterAttribute)
-        $arrSet = 
+        $arrSet =
         $ValidateSetAttribute = [System.Management.Automation.ValidateSetAttribute]::New($arrSet)
         $AttributeCollection.Add($ValidateSetAttribute)
         $RuntimeParameter = [System.Management.Automation.RuntimeDefinedParameter]::New($ParameterName, [string], $AttributeCollection)
@@ -311,8 +311,8 @@
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Unable to create the droplet.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

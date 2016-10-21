@@ -104,11 +104,11 @@ function Get-DOAction
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key to be passed as a string.
 
    System.UInt64
-       
+
        This cmdlet requires the action ID to be passed as an unsigned, 16-bit interger.
 .OUTPUTS
    PS.DigitalOcean.Action
@@ -126,21 +126,21 @@ function Get-DOAction
     Param
     (
         # Used to get a specific action with the action ID.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [UInt64[]]$ActionID,
         # Used to override the default limit of 20.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=1)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Total','Size')]
         [UInt64]$Limit = 20,
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=2)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -189,8 +189,8 @@ function Get-DOAction
             }
             catch
             {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Could not find any action information.`n`r$errorDetail"
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                Write-Error $errorDetail.message
             }
         }
         else
@@ -216,8 +216,8 @@ function Get-DOAction
                 }
                 catch
                 {
-                    $errorDetail = $_.Exception.Message
-                    Write-Warning "Could not find any action information for ID $id.`n`r$errorDetail"
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
                 }
             }
         }

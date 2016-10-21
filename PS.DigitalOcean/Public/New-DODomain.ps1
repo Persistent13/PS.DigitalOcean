@@ -18,7 +18,7 @@
 
 .INPUTS
    System.String
-        
+
        This cmdlet requires the API key, domain name, and target to be passed as strings.
 .OUTPUTS
    PS.DigitalOcean.Domain
@@ -37,7 +37,7 @@
     Param
     (
         # Used to specify the name of the new domain name.
-        [Parameter(Mandatory=$true, 
+        [Parameter(Mandatory=$true,
                    Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -56,7 +56,7 @@
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false, 
+        [Parameter(Mandatory=$false,
                    Position=3)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -91,8 +91,8 @@
             }
             catch
             {
-                $errorDetail = $_.Exception.Message
-                Write-Warning "Unable to create the domain.`n`r$errorDetail"
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                Write-Error $errorDetail.message
             }
         }
     }
