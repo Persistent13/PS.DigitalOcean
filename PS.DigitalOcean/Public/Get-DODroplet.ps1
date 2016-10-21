@@ -18,7 +18,7 @@
    locked       : False
    status       : active
    kernel       : @{id=2233; name=Ubuntu 14.04 x64 vmlinuz-3.13.0-37-generic; version=3.13.0-37-generic}
-   created_at   : 2014-11-14T16:29:21Z
+   created_at   : Friday, November 14, 2014 8:29:21 AM
    features     : {backups, ipv6, virtio}
    backup_ids   : {7938002}
    snapshot_ids : {}
@@ -42,7 +42,7 @@
    locked       : False
    status       : active
    kernel       : @{id=2233; name=Ubuntu 14.04 x64 vmlinuz-3.13.0-37-generic; version=3.13.0-37-generic}
-   created_at   : 2014-11-14T16:29:21Z
+   created_at   : Friday, November 14, 2014 8:29:21 AM
    features     : {backups, ipv6, virtio}
    backup_ids   : {7938002}
    snapshot_ids : {}
@@ -61,7 +61,7 @@
    locked       : False
    status       : active
    kernel       : @{id=2233; name=Ubuntu 14.04 x64 vmlinuz-3.13.0-37-generic; version=3.13.0-37-generic}
-   created_at   : 2014-11-14T16:42:36Z
+   created_at   : Friday, November 14, 2014 8:42:36 AM
    features     : {backups, ipv6, virtio}
    backup_ids   : {7938003}
    snapshot_ids : {}
@@ -137,7 +137,7 @@
                         'DiskGB' = $info.disk
                         'Locked' = $info.locked
                         'Status' = $info.status
-                        'CreatedAt' = $info.created_at
+                        'CreatedAt' = [datetime]$info.created_at
                         'Features' = $info.features
                         'Kernel' = $info.kernel
                         'NextBackupWindow' = $info.next_backup_window
@@ -175,7 +175,7 @@
                         'DiskGB' = $info.droplet.disk
                         'Locked' = $info.droplet.locked
                         'Status' = $info.droplet.status
-                        'CreatedAt' = $info.droplet.created_at
+                        'CreatedAt' = [datetime]$info.droplet.created_at
                         'Features' = $info.droplet.features
                         'Kernel' = $info.droplet.kernel
                         'NextBackupWindow' = $info.droplet.next_backup_window

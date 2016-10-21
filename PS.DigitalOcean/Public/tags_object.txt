@@ -1,0 +1,32 @@
+bar = [PSCustomObject]@{
+    'id' = $foo.tag.resources.droplets.last_tagged.id
+    'name' = $foo.tag.resources.droplets.last_tagged.name
+    'memory' = $foo.tag.resources.droplets.last_tagged.memory
+    'vcpus' = $foo.tag.resources.droplets.last_tagged.vcpus
+    'disk' = $foo.tag.resources.droplets.last_tagged.disk
+    'locked' = $foo.tag.resources.droplets.last_tagged.locked
+    'status' = $foo.tag.resources.droplets.last_tagged.status
+    'kernel' = $foo.tag.resources.droplets.last_tagged.kernel
+    'created_at' = [datetime]$foo.tag.resources.droplets.last_tagged.created_at
+    'features' = $foo.tag.resources.droplets.last_tagged.features
+    'backup_ids' = $foo.tag.resources.droplets.last_tagged.backup_ids
+    'snapshot_ids' = $foo.tag.resources.droplets.last_tagged.snapshot_ids
+    'image' = [PSCustomObject]@{
+        'id' = $foo.tag.resources.droplets.last_tagged.image.id
+        'name' = $foo.tag.resources.droplets.last_tagged.image.name
+        'distribution' = $foo.tag.resources.droplets.last_tagged.image.distribution
+        'slug' = $foo.tag.resources.droplets.last_tagged.image.slug
+        'public' = $foo.tag.resources.droplets.last_tagged.image.public
+        'regions' = $foo.tag.resources.droplets.last_tagged.image.regions
+        'created_at' = [datetime]$foo.tag.resources.droplets.last_tagged.image.created_at
+        'type' = $foo.tag.resources.droplets.last_tagged.image.type
+        'min_disk_size' = $foo.tag.resources.droplets.last_tagged.image.min_disk_size
+        'size_gigabytes' = $foo.tag.resources.droplets.last_tagged.image.size_gigabytes
+    }
+    'volumes' = $foo.tag.resources.droplets.last_tagged.volumes
+    'size' = $foo.tag.resources.droplets.last_tagged.size
+    'size_slug' = $foo.tag.resources.droplets.last_tagged.size_slug
+    'networks' = $foo.tag.resources.droplets.last_tagged.networks
+    'region' = $foo.tag.resources.droplets.last_tagged.region
+    'tags' = $foo.tag.resources.droplets.last_tagged.tags
+}

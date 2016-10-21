@@ -15,7 +15,7 @@ function Get-DODropletAction
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
    CompletedAt  : 2014-11-14T16:30:06Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -29,7 +29,7 @@ function Get-DODropletAction
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
    CompletedAt  : 2014-11-14T16:30:06Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -61,7 +61,7 @@ function Get-DODropletAction
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
    CompletedAt  : 2014-11-14T16:30:06Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -93,7 +93,7 @@ function Get-DODropletAction
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
    CompletedAt  : 2014-11-14T16:30:06Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -165,8 +165,8 @@ function Get-DODropletAction
                     'ActionID' = $info.id
                     'Status' = $info.status
                     'Type' = $info.type
-                    'StartedAt' = $info.started_at
-                    'CompletedAt' = $info.completed_at
+                    'StartedAt' = [datetime]$info.started_at
+                    'CompletedAt' = [datetime]$info.completed_at
                     'ResourceID' = $info.resource_id
                     'ResourceType' = $info.resource_type
                     'Region' = $info.region_slug

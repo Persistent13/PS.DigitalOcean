@@ -283,7 +283,7 @@
                         'DiskGB' = $doInfo.droplet.disk
                         'Locked' = $doInfo.droplet.locked
                         'Status' = $doInfo.droplet.status
-                        'CreatedAt' = $doInfo.droplet.created_at
+                        'CreatedAt' = [datetime]$doInfo.droplet.created_at
                         'Features' = $doInfo.droplet.features
                         'Kernel' = $doInfo.droplet.kernel
                         'NextBackupWindow' = $doInfo.droplet.next_backup_window

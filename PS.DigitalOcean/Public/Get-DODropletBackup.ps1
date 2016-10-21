@@ -15,7 +15,7 @@ function Get-DODropletBackup
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
    CompletedAt  : 2014-11-14T16:30:06Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -29,7 +29,7 @@ function Get-DODropletBackup
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
    CompletedAt  : 2014-11-14T16:30:06Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -61,7 +61,7 @@ function Get-DODropletBackup
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
    CompletedAt  : 2014-11-14T16:30:06Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -93,7 +93,7 @@ function Get-DODropletBackup
    ActionID     : 36804636
    Status       : completed
    Type         : create
-   StartedAt    : 2014-11-14T16:29:21Z
+   StartedAt    : Friday, November 14, 2014 8:29:21 AM
    CompletedAt  : 2014-11-14T16:30:06Z
    ResourceID   : 3164444
    ResourceType : droplet
@@ -168,7 +168,7 @@ function Get-DODropletBackup
                     'Slug' = $info.slug
                     'Public' = $info.public
                     'Region' = $info.regions
-                    'CreatedAt' = $info.created_at
+                    'CreatedAt' = [datetime]$info.created_at
                     'Type' = $info.type
                     'MinimumDiskSize' = $info.min_disk_size
                 }

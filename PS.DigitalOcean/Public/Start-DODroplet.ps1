@@ -146,8 +146,8 @@ function Start-DODroplet
                         'ActionID' = $doInfo.action.id
                         'Status' = $doInfo.action.status
                         'Type' = $doInfo.action.type
-                        'StartedAt' = $doInfo.action.started_at
-                        'CompletedAt' = $doInfo.action.completed_at
+                        'StartedAt' = [datetime]$doInfo.action.started_at
+                        'CompletedAt' = [datetime]$doInfo.action.completed_at
                         'ResourceID' = $doInfo.action.resource_id
                         'ResourceType' = $doInfo.action.resource_type
                         'Region' = $doInfo.action.region_slug
