@@ -98,15 +98,13 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=0)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
         [String]$APIKey = $script:SavedDOAPIKey,
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=1)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]

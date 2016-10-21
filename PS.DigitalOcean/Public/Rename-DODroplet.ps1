@@ -99,27 +99,23 @@ function Rename-DODroplet
     Param
     (
         # Uniqe ID of the Droplet.
-        [Parameter(Mandatory=$true,
-                   Position=0)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [UInt64[]]$DropletID,
         # Uniqe ID or slug of the backup image.
-        [Parameter(Mandatory=$true,
-                   Position=1)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$Name,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false,
-                   Position=2)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=3)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]

@@ -37,27 +37,23 @@
     Param
     (
         # Used to specify the name of the new domain name.
-        [Parameter(Mandatory=$true,
-                   Position=0)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$DomainName,
         # Used to specify the address of the new domain name. IP v4 or v6.
-        [Parameter(Mandatory=$true,
-                   Position=1)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('IPAddress','RecordData','Data','Address')]
         [String]$Target,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false,
-                   Position=2)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=3)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]

@@ -49,15 +49,13 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=0)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
         [String]$APIKey = $script:SavedDOAPIKey,
         # Used to get a specific domain with the domain name.
-        [Parameter(Mandatory=$false,
-                   Position=1)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String[]]$DomainName

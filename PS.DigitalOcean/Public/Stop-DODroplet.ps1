@@ -104,28 +104,24 @@ function Stop-DODroplet
     Param
     (
         # Used to specify the name of the droplet.
-        [Parameter(Mandatory=$true,
-                   ValueFromPipeline=$true,
-                   Position=0)]
+        [Parameter(Mandatory,
+                   ValueFromPipeline=$true)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt64[]]$DropletID,
         # Used to force a shutdown of the droplet.
-        [Parameter(Mandatory=$false,
-                   Position=1)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('PowerOff')]
         [Switch]$TurnOff,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false,
-                   Position=2)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=3)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]

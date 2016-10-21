@@ -62,34 +62,29 @@ function Resize-DODroplet
     Param
     (
         # Used to specify the name of the droplet.
-        [Parameter(Mandatory=$true,
-                   ValueFromPipeline=$true,
-                   Position=0)]
+        [Parameter(Mandatory,
+                   ValueFromPipeline=$true)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt64[]]$DropletID,
         # Used to specify the size of the droplet.
-        [Parameter(Mandatory=$true,
-                   Position=1)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('512mb','1gb','2gb','4gb','8gb','16gb','32gb','48gb','64gb')]
         [String]$Size,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false,
-                   Position=2)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Permanent,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false,
-                   Position=3)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=4)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]

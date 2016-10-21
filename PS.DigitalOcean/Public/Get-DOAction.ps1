@@ -126,22 +126,19 @@ function Get-DOAction
     Param
     (
         # Used to get a specific action with the action ID.
-        [Parameter(Mandatory=$false,
-                   Position=0)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [UInt64[]]$ActionID,
         # Used to override the default limit of 20.
-        [Parameter(Mandatory=$false,
-                   Position=1)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Total','Size')]
         [UInt64]$Limit = 20,
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=2)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]

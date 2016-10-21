@@ -93,21 +93,18 @@
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=0)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
         [String]$APIKey = $script:SavedDOAPIKey,
         # Used to get a specific domain.
-        [Parameter(Mandatory=$true,
-                   Position=1)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$DomainName,
         # Used to get a specific domain record.
-        [Parameter(Mandatory=$false,
-                   Position=2)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('RecordID','ID')]

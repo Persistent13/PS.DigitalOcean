@@ -104,28 +104,24 @@
     Param
     (
         # Used to specify the name of the droplet.
-        [Parameter(Mandatory=$true,
-                   Position=0)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String[]]$Name,
         # Used to specify the regin the droplet is created.
-        [Parameter(Mandatory=$true,
-                   Position=1)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('ams1','ams2','ams3','fra1','lon1','nyc1','nyc2','nyc3','sfo1','sgp1','tor1')]
         [String]$Region,
         # Used to specify the size of the droplet.
-        [Parameter(Mandatory=$true,
-                   Position=2)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('512mb','1gb','2gb','4gb','8gb','16gb','32gb','48gb','64gb')]
         [String]$Size,
         # Used to specify the image installed to the droplet.
-        [Parameter(Mandatory=$false,
-                   Position=3)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('centos-5-8-x32','centos-5-8-x64','centos-6-5-x32','centos-6-5-x64','coreos-beta',`
@@ -135,50 +131,42 @@
                      'ubuntu-15-10-x64')]
         [String]$Image,
         # Used to specify the image ID installed to the droplet.
-        [Parameter(Mandatory=$false,
-                   Position=4)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt64]$ImageID,
         # Used to specify the public SSH keys added to the droplet.
-        [Parameter(Mandatory=$false,
-                   Position=5)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String[]]$SSHKey,
         # Used to specify if automatic backups are enabled for the droplet.
-        [Parameter(Mandatory=$false,
-                   Position=6)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Backups,
         # Used to specify if IPv6 is enabled for the droplet.
-        [Parameter(Mandatory=$false,
-                   Position=7)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$IPv6,
         # Used to specify if private networking is enabled for the droplet.
-        [Parameter(Mandatory=$false,
-                   Position=8)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$PrivateNetworking,
         # Used to specify user data for the droplet.
-        [Parameter(Mandatory=$false,
-                   Position=9)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$UserData,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false,
-                   Position=10)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=11)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]

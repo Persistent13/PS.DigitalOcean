@@ -43,7 +43,7 @@ function Resolve-HTTPResponce
     Param
     (
         # The HTTP byte responce to read.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Net.HttpWebResponse[]]$Responce

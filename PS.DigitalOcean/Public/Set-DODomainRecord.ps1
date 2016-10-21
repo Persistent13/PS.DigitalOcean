@@ -71,67 +71,57 @@
     Param
     (
         # Used to specify the name of the domain name to create the record under.
-        [Parameter(Mandatory=$true,
-                   Position=0)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$DomainName,
         # Used to get a specific domain record.
-        [Parameter(Mandatory=$true,
-                   Position=1)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('RecordID','ID')]
         [UInt64[]]$DomainRecordID,
         # Used to specify the DNS record type.
-        [Parameter(Mandatory=$true,
-                   Position=2)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('A','AAAA','CNAME','MX','NS','SRV','TXT')]
         [Alias('Type')]
         [String]$RecordType,
         # Used to specify the address of the new domain name. IP v4 or v6 and the name of the SRV and MX record.
-        [Parameter(Mandatory=$true,
-                   Position=3)]
+        [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('IPAddress','RecordData','Data','Address')]
         [String]$Target,
         # Used to specify the name of the new domain record.
-        [Parameter(Mandatory=$false,
-                   Position=4)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Record','Name')]
         [String]$DomainRecord,
         # Used to set the priority of a SRV or MX record.
-        [Parameter(Mandatory=$false,
-                   Position=5)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt16]$Priority,
         # Used to set the port of a SRV record.
-        [Parameter(Mandatory=$false,
-                   Position=6)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt16]$Port,
         # Used to set the weight of a SRV record.
-        [Parameter(Mandatory=$false,
-                   Position=7)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt16]$Weight,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false,
-                   Position=8)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false,
-                   Position=9)]
+        [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
