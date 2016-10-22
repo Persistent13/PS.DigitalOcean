@@ -2,10 +2,10 @@ function Resolve-HTTPResponse
 {
 <#
 .Synopsis
-    The Resolve-HTTPResponse cmdlet will convert an HTTP responce into a string.
+    The Resolve-HTTPResponse cmdlet will convert an HTTP Response into a string.
 .DESCRIPTION
-    The Resolve-HTTPResponse cmdlet will convert an HTTP responce into a string.
-    The HTTP responce must be passed as a System.Net.HttpWebResponse object.
+    The Resolve-HTTPResponse cmdlet will convert an HTTP Response into a string.
+    The HTTP Response must be passed as a System.Net.HttpWebResponse object.
 
     This module is primary designed for handling REST API error data that Invoke-RestMethod
     and Invoke-WebRequest normally make difficult to access.
@@ -18,13 +18,13 @@ function Resolve-HTTPResponse
     }
     catch
     {
-        # Resolve the HTTP byte responce into a useable string.
-        Resolve-HTTPResponse -Responce $_.Exception.Responce
+        # Resolve the HTTP byte Response into a useable string.
+        Resolve-HTTPResponse -Response $_.Exception.Response
     }
     {"id":"unauthorized","message":"Unable to authenticate you."}
 
     The script block above attempts to access an RESTful endpoint while un-authenticated returning a 403 status that causes
-    Invoke-RestMethod to throw an error that is handled by Resolve-HTTPResponse which returns the responce in a string.
+    Invoke-RestMethod to throw an error that is handled by Resolve-HTTPResponse which returns the Response in a string.
 .INPUTS
     System.Net.HttpWebResponse[]
 
@@ -32,7 +32,7 @@ function Resolve-HTTPResponse
 .OUTPUTS
     System.String
 
-        A string that holdes the HTTP responce is returned.
+        A string that holdes the HTTP Response is returned.
 .ROLE
     The role this cmdlet belongs to
 .FUNCTIONALITY
@@ -42,7 +42,7 @@ function Resolve-HTTPResponse
     [OutputType([String])]
     Param
     (
-        # The HTTP byte responce to read.
+        # The HTTP byte Response to read.
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -51,7 +51,7 @@ function Resolve-HTTPResponse
 
     Process
     {
-        foreach($res in $Responce)
+        foreach($res in $Response)
         {
             $reader = [IO.StreamReader]::New($res.GetResponseStream())
             $reader.BaseStream.Position = 0

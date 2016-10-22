@@ -156,7 +156,7 @@ function Rename-DOImage
             }
             catch
             {
-                $errorDetail = (Resolve-HTTPResponse -Responce $_.Exception.Responce) | ConvertFrom-Json
+                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
                 Write-Error $errorDetail.message
             }
         }
