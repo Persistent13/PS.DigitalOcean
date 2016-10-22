@@ -108,6 +108,6 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @image -MemberName Region
     Update-TypeData @image -MemberName CreatedAt
     Update-TypeData @image -MemberName Type
-    Update-TypeData @image -MemberName SizeGigabytes
+    Update-TypeData @image -MemberName SizeGB
     Update-TypeData @image -MemberName MinimumDiskSize
 }

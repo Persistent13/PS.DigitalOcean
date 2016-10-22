@@ -205,7 +205,7 @@ function Get-DOImage
     }
     Process
     {
-        if(-not $ImageID -or -not $ImageSlug)
+        if($PSCmdlet.ParameterSetName -in @('Distribution','Application','Private','All'))
         {
             try
             {
@@ -231,8 +231,16 @@ function Get-DOImage
             }
             catch
             {
-                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                Write-Error $errorDetail.message
+                if($_.Exception.Response)
+                {
+                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error $errorDetail.message
+                }
+                else
+                {
+                    # Return the error as is.
+                    Write-Error $_
+                }
             }
         }
         else
@@ -260,8 +268,16 @@ function Get-DOImage
                 }
                 catch
                 {
-                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                    Write-Error $errorDetail.message
+                    if($_.Exception.Response)
+                    {
+                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                        Write-Error $errorDetail.message
+                    }
+                    else
+                    {
+                        # Return the error as is.
+                        Write-Error $_
+                    }
                 }
             }
         }
