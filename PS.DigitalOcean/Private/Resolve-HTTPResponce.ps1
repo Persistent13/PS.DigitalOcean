@@ -1,10 +1,10 @@
-function Resolve-HTTPResponce
+function Resolve-HTTPResponse
 {
 <#
 .Synopsis
-    The Resolve-HTTPResponce cmdlet will convert an HTTP responce into a string.
+    The Resolve-HTTPResponse cmdlet will convert an HTTP responce into a string.
 .DESCRIPTION
-    The Resolve-HTTPResponce cmdlet will convert an HTTP responce into a string.
+    The Resolve-HTTPResponse cmdlet will convert an HTTP responce into a string.
     The HTTP responce must be passed as a System.Net.HttpWebResponse object.
 
     This module is primary designed for handling REST API error data that Invoke-RestMethod
@@ -19,12 +19,12 @@ function Resolve-HTTPResponce
     catch
     {
         # Resolve the HTTP byte responce into a useable string.
-        Resolve-HTTPResponce -Responce $_.Exception.Response
+        Resolve-HTTPResponse -Responce $_.Exception.Responce
     }
     {"id":"unauthorized","message":"Unable to authenticate you."}
 
     The script block above attempts to access an RESTful endpoint while un-authenticated returning a 403 status that causes
-    Invoke-RestMethod to throw an error that is handled by Resolve-HTTPResponce which returns the responce in a string.
+    Invoke-RestMethod to throw an error that is handled by Resolve-HTTPResponse which returns the responce in a string.
 .INPUTS
     System.Net.HttpWebResponse[]
 
@@ -46,7 +46,7 @@ function Resolve-HTTPResponce
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [Net.HttpWebResponse[]]$Responce
+        [Net.HttpWebResponse[]]$Response
     )
 
     Process

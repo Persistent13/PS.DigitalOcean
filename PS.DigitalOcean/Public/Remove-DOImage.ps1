@@ -1,4 +1,4 @@
-function Enable-DODropletIPv6
+function Remove-DOImage
 {
 <#
 .Synopsis
@@ -92,18 +92,18 @@ function Enable-DODropletIPv6
    PS.DigitalOcean
 #>
     [CmdletBinding(SupportsShouldProcess=$true,
-                   ConfirmImpact='Low',
+                   ConfirmImpact='High',
                    PositionalBinding=$true)]
-    [Alias('edovmipv6')]
-    [OutputType('PS.DigitalOcean.Action')]
+    [Alias('rdoi')]
+    [OutputType()]
     Param
     (
-        # Uniqe ID of the Droplet.
+        # Uniqe ID of the image to update.
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
-        [UInt64[]]$DropletID,
+        [UInt64]$ImageID,
         # Used to bypass confirmation prompts.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
@@ -123,38 +123,21 @@ function Enable-DODropletIPv6
         {
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
-        [String]$sessionBody = @{'type'='enable_ipv6'} | ConvertTo-Json
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
-        [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
+        [Uri]$doApiUri = "https://api.digitalocean.com/v2/images/$ImageID"
     }
     Process
     {
-        foreach($droplet in $DropletID)
+        if($Force -or $PSCmdlet.ShouldProcess($ImageID))
         {
-            if($Force -or $PSCmdlet.ShouldProcess("Enabling IPv6 for DropletID $droplet."))
+            try
             {
-                try
-                {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
-                    $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUriWithID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
-                    $doReturnInfo = [PSCustomObject]@{
-                        'ActionID' = $doInfo.action.id
-                        'Status' = $doInfo.action.status
-                        'Type' = $doInfo.action.type
-                        'StartedAt' = [datetime]$doInfo.action.started_at
-                        'CompletedAt' = [datetime]$doInfo.action.completed_at
-                        'ResourceID' = $doInfo.action.resource_id
-                        'ResourceType' = $doInfo.action.resource_type
-                        'Region' = $doInfo.action.region_slug
-                    }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
-                }
-                catch
-                {
-                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Responce) | ConvertFrom-Json
-                    Write-Error $errorDetail.message
-                }
+                Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop | Out-Null
+            }
+            catch
+            {
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Responce) | ConvertFrom-Json
+                Write-Error $errorDetail.message
             }
         }
     }

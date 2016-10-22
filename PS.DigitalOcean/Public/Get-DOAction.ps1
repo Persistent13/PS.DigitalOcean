@@ -186,7 +186,7 @@ function Get-DOAction
             }
             catch
             {
-                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Responce) | ConvertFrom-Json
                 Write-Error $errorDetail.message
             }
         }
@@ -213,7 +213,7 @@ function Get-DOAction
                 }
                 catch
                 {
-                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Responce) | ConvertFrom-Json
                     Write-Error $errorDetail.message
                 }
             }

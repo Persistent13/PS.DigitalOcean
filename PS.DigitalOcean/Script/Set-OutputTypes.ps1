@@ -6,7 +6,7 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
         TypeName = 'PS.DigitalOcean.Action'
         Value = $null
     }
-    
+
     Update-TypeData @action -MemberName ActionID
     Update-TypeData @action -MemberName Status
     Update-TypeData @action -MemberName Type
@@ -15,25 +15,25 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @action -MemberName ResourceID
     Update-TypeData @action -MemberName ResourceType
     Update-TypeData @action -MemberName Region
-    
+
     #Adds domain OutputType
     $domain = @{
         MemberType = 'NoteProperty'
         TypeName = 'PS.DigitalOcean.Domain'
         Value = $null
     }
-    
+
     Update-TypeData @domain -MemberName Name
     Update-TypeData @domain -MemberName TTL
     Update-TypeData @domain -MemberName ZoneFile
-    
+
     #Adds domain record OutputType
     $domainRecord = @{
         MemberType = 'NoteProperty'
         TypeName = 'PS.DigitalOcean.DomainRecord'
         Value = $null
     }
-    
+
     Update-TypeData @domainRecord -MemberName ID
     Update-TypeData @domainRecord -MemberName Type
     Update-TypeData @domainRecord -MemberName Name
@@ -41,14 +41,14 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @domainRecord -MemberName Priority
     Update-TypeData @domainRecord -MemberName Port
     Update-TypeData @domainRecord -MemberName Weight
-    
+
     #Adds droplet OutputType
     $droplet = @{
         MemberType = 'NoteProperty'
         TypeName = 'PS.DigitalOcean.Droplet'
         Value = $null
     }
-    
+
     Update-TypeData @droplet -MemberName DropletID
     Update-TypeData @droplet -MemberName Name
     Update-TypeData @droplet -MemberName Memory
@@ -66,14 +66,14 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @droplet -MemberName Size
     Update-TypeData @droplet -MemberName Network
     Update-TypeData @droplet -MemberName Region
-    
+
     #Adds account OutputType
     $account = @{
         MemberType = 'NoteProperty'
         TypeName = 'PS.DigitalOcean.Account'
         Value = $null
     }
-    
+
     Update-TypeData @account -MemberName DropletLimit
     Update-TypeData @account -MemberName FloatingIPLimit
     Update-TypeData @account -MemberName Email
@@ -81,25 +81,25 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @account -MemberName EmailVerified
     Update-TypeData @account -MemberName Status
     Update-TypeData @account -MemberName StatusMessage
-    
+
     #Adds kernel OutputType
     $kernel = @{
         MemberType = 'NoteProperty'
         TypeName = 'PS.DigitalOcean.Kernel'
         Value = $null
     }
-    
+
     Update-TypeData @kernel -MemberName KernelID
     Update-TypeData @kernel -MemberName Name
     Update-TypeData @kernel -MemberName Version
-    
+
     #Adds image OutputType
     $image = @{
         MemberType = 'NoteProperty'
         TypeName = 'PS.DigitalOcean.Image'
         Value = $null
     }
-    
+
     Update-TypeData @image -MemberName ImageID
     Update-TypeData @image -MemberName Name
     Update-TypeData @image -MemberName Distribution
@@ -108,5 +108,6 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @image -MemberName Region
     Update-TypeData @image -MemberName CreatedAt
     Update-TypeData @image -MemberName Type
+    Update-TypeData @image -MemberName SizeGigabytes
     Update-TypeData @image -MemberName MinimumDiskSize
 }

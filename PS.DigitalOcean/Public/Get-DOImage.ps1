@@ -190,21 +190,15 @@ function Get-DOImage
         {
             'Distribution' {
                 [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&distribution=true"
-            }
-            'Application' {
+            } 'Application' {
                 [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&application=true"
-            }
-            'Private' {
-                Write-Debug 'Using Private url.'
+            } 'Private' {
                 [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&private=true"
-            }
-            'ImageID' {
+            } 'ImageID' {
                 [UInt64[]]$image = $ImageID
-            }
-            'ImageSlug' {
+            } 'ImageSlug' {
                 [String[]]$image = $ImageSlug
-            }
-            Default {
+            } Default {
                 [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit"
             }
         }
@@ -237,7 +231,7 @@ function Get-DOImage
             }
             catch
             {
-                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Responce) | ConvertFrom-Json
                 Write-Error $errorDetail.message
             }
         }
@@ -259,13 +253,14 @@ function Get-DOImage
                         'CreatedAt' = [datetime]$doInfo.image.created_at
                         'Type' = $doInfo.image.type
                         'MinimumDiskSize' = $doInfo.image.min_disk_size
+                        'SizeGB' = $doInfo.image.size_gigabytes
                     }
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
                     Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
                 }
                 catch
                 {
-                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Responce) | ConvertFrom-Json
                     Write-Error $errorDetail.message
                 }
             }

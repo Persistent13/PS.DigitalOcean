@@ -171,7 +171,7 @@ function Stop-DODroplet
                 }
                 catch
                 {
-                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Response) | ConvertFrom-Json
+                    $errorDetail = (Resolve-HTTPResponce -Responce $_.Exception.Responce) | ConvertFrom-Json
                     Write-Error $errorDetail.message
                 }
             }
