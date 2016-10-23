@@ -206,7 +206,7 @@ param(
             $ParamAttr.HelpMessage = $HelpMessage
         }
 
-        $AttributeCollection = New-Object 'Collections.ObjectModel.Collection[System.Attribute]'
+        $AttributeCollection = New-Object Collections.ObjectModel.Collection[System.Attribute]
         $AttributeCollection.Add($ParamAttr)
 
     #param validation set if specified
@@ -224,7 +224,7 @@ param(
 
 
     #Create the dynamic parameter
-        $Parameter = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameter -ArgumentList @($Name, $Type, $AttributeCollection)
+        $Parameter = New-Object System.Management.Automation.RuntimeDefinedParameter -ArgumentList @($Name, $Type, $AttributeCollection)
 
     #Add the dynamic parameter to an existing dynamic parameter dictionary, or create the dictionary and add it
         if($DPDictionary)

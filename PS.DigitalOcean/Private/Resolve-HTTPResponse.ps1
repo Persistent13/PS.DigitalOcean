@@ -53,7 +53,7 @@ function Resolve-HTTPResponse
     {
         foreach($res in $Response)
         {
-            $reader = [IO.StreamReader]::New($res.GetResponseStream())
+            $reader = New-Object IO.StreamReader -ArgumentList $res.GetResponseStream()
             $reader.BaseStream.Position = 0
             $reader.DiscardBufferedData()
             [string]$resBody = $reader.ReadToEnd()

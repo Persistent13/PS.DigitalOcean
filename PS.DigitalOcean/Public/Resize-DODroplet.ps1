@@ -56,40 +56,50 @@ function Resize-DODroplet
 #>
     [CmdletBinding(SupportsShouldProcess=$true,
                    ConfirmImpact='Low',
-                   PositionalBinding=$true)]
+                   PositionalBinding=$false)]
     [Alias('rdodp')]
     [OutputType('PS.DigitalOcean.Action')]
     Param
     (
         # Used to specify the name of the droplet.
-        [Parameter(Mandatory,
+        [Parameter(Mandatory,Position=0,
                    ValueFromPipeline=$true)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt64[]]$DropletID,
-        # Used to specify the size of the droplet.
-        [Parameter(Mandatory)]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet('512mb','1gb','2gb','4gb','8gb','16gb','32gb','48gb','64gb')]
-        [String]$Size,
-        # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false)]
+        # Commit to the resize and irreversibly extend the VM disk.
+        [Parameter(Mandatory=$false,Position=2)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Permanent,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=3)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=4)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
         [String]$APIKey = $script:SavedDOAPIKey
     )
+
+    DynamicParam {
+        $sizes = Get-DOSize -APIKey $script:SavedDOAPIKey -ErrorAction Stop
+        $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+        $sizeParam = @{
+            Name = 'Size'
+            Type = [String]
+            ValidateSet = $sizes.slug
+            Mandatory = $true
+            Position = 1
+            HelpMessage = 'Used to specify the size of the droplet.'
+            DPDictionary = $Dictionary
+        }
+        New-DynamicParam @sizeParam
+        return $Dictionary
+    }
 
     Begin
     {

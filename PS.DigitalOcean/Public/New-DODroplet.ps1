@@ -182,7 +182,7 @@
         {
             $sizes = Get-DOSize -APIKey $script:SavedDOAPIKey -ErrorAction Stop
             $images = Get-DOImage -Limit ([Int]::MaxValue) -APIKey $script:SavedDOAPIKey -ErrorAction Stop
-            $Dictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::New()
+            $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
             $regionParam = @{
                 Name = 'Region'
                 Type = [String]
