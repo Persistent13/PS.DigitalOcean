@@ -103,7 +103,7 @@ function Remove-DOImage
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
-        [UInt64]$ImageID,
+        [UInt64[]]$ImageID,
         # Used to bypass confirmation prompts.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
@@ -124,28 +124,32 @@ function Remove-DOImage
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
-        [Uri]$doApiUri = "https://api.digitalocean.com/v2/images/$ImageID"
+        [Uri]$doApiUri = "https://api.digitalocean.com/v2/images/"
     }
     Process
     {
-        if($Force -or $PSCmdlet.ShouldProcess($ImageID))
+        foreach($image in $ImageID)
         {
-            try
+            if($Force -or $PSCmdlet.ShouldProcess($image))
             {
-                Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop | Out-Null
-            }
-            catch
-            {
-                if($_.Exception.Response)
+                try
                 {
-                    # Convert a 400-599 error to something useable.
-                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                    Write-Error -Message $errorDetail.message
+                    $doApiUriWithImageID = '{0}{1}' -f $doApiUri,$image
+                    Invoke-RestMethod -Method POST -Uri $doApiUriWithImageID -Headers $sessionHeaders | Out-Null
                 }
-                else
+                catch
                 {
-                    # Return the error as is.
-                    Write-Error -Message $_
+                    if($_.Exception.Response)
+                    {
+                        # Convert a 400-599 error to something useable.
+                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                        Write-Error -Message $errorDetail.message
+                    }
+                    else
+                    {
+                        # Return the error as is.
+                        Write-Error -Message $_
+                    }
                 }
             }
         }
