@@ -82,19 +82,22 @@
         try
         {
             $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
-            $doReturnInfo = [PSCustomObject]@{
-                'Slug' = $doInfo.account.slug
-                'Memory' = $doInfo.account.memory
-                'vCPU' = $doInfo.account.vcpus
-                'Disk' = $doInfo.account.disk
-                'Transfer' = $doInfo.account.transfer
-                'PriceMonthly' = $doInfo.account.price_monthly
-                'PriceHourly' = $doInfo.account.price_hourly
-                'Regions' = $doInfo.account.regions
-                'Available' = $doInfo.account.available
+            foreach($size in $doInfo.sizes)
+            {
+                $doReturnInfo = [PSCustomObject]@{
+                    'Slug' = $size.slug
+                    'Memory' = $size.memory
+                    'vCPU' = $size.vcpus
+                    'Disk' = $size.disk
+                    'Transfer' = $size.transfer
+                    'PriceMonthly' = $size.price_monthly
+                    'PriceHourly' = $size.price_hourly
+                    'Region' = $size.regions
+                    'Available' = $size.available
+                }
+                # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Size'
             }
-            # DoReturnInfo is returned after Add-ObjectDetail is processed.
-            Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Account'
         }
         catch
         {

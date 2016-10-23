@@ -233,13 +233,14 @@ function Get-DOImage
             {
                 if($_.Exception.Response)
                 {
-                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                    Write-Error $errorDetail.message
+                        # Convert a 400-599 error to something useable.
+                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                        Write-Error -Message $errorDetail.message
                 }
                 else
                 {
                     # Return the error as is.
-                    Write-Error $_
+                    Write-Error -Message $_
                 }
             }
         }
@@ -270,13 +271,14 @@ function Get-DOImage
                 {
                     if($_.Exception.Response)
                     {
+                        # Convert a 400-599 error to something useable.
                         $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                        Write-Error $errorDetail.message
+                        Write-Error -Message $errorDetail.message
                     }
                     else
                     {
                         # Return the error as is.
-                        Write-Error $_
+                        Write-Error -Message $_
                     }
                 }
             }

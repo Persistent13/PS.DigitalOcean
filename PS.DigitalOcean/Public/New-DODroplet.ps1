@@ -98,75 +98,79 @@
 #>
     [CmdletBinding(SupportsShouldProcess=$true,
                    ConfirmImpact='Low',
-                   PositionalBinding=$true)]
+                   PositionalBinding=$false,
+                   DefaultParameterSetName='')]
     [Alias('ndovm')]
     [OutputType('PS.DigitalOcean.Droplet')]
     Param
     (
         # Used to specify the name of the droplet.
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory,Position=0,
+                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,Position=0,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String[]]$Name,
-        # Used to specify the regin the droplet is created.
-        [Parameter(Mandatory)]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet('ams1','ams2','ams3','fra1','lon1','nyc1','nyc2','nyc3','sfo1','sgp1','tor1')]
-        [String]$Region,
-        # Used to specify the size of the droplet.
-        [Parameter(Mandatory)]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet('512mb','1gb','2gb','4gb','8gb','16gb','32gb','48gb','64gb')]
-        [String]$Size,
-        # Used to specify the image installed to the droplet.
-        [Parameter(Mandatory=$false)]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet('centos-5-8-x32','centos-5-8-x64','centos-6-5-x32','centos-6-5-x64','coreos-beta',`
-                     'debian-6-0-x32','debian-6-0-x64','debian-7-0-x32','debian-7-0-x64','debian-8-x32','debian-8-x64',`
-                     'fedora-21-x64','fedora-22-x64','freebsd-10-1-x64','ubuntu-12-04-x32','ubuntu-12-04-x64',`
-                     'ubuntu-14-04-x32','ubuntu-14-04-x64','ubuntu-15-04-x32','ubuntu-15-04-x64','ubuntu-15-10-x32',`
-                     'ubuntu-15-10-x64')]
-        [String]$Image,
         # Used to specify the image ID installed to the droplet.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=1,
+                   ParameterSetName='ImageID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt64]$ImageID,
         # Used to specify the public SSH keys added to the droplet.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=2,
+                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,Position=4,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String[]]$SSHKey,
         # Used to specify if automatic backups are enabled for the droplet.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=3,
+                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,Position=5,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Backups,
         # Used to specify if IPv6 is enabled for the droplet.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=4,
+                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,Position=6,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$IPv6,
         # Used to specify if private networking is enabled for the droplet.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=5,
+                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,Position=7,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$PrivateNetworking,
         # Used to specify user data for the droplet.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=6,
+                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,Position=8,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [String]$UserData,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=7,
+                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,Position=9,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,Position=8,
+                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,Position=10,
+                   ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
@@ -174,96 +178,81 @@
     )
 
     DynamicParam {
-        $ParameterName = 'Size'
-        $RuntimeParameterDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::New()
-        $AttributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::New()
-        $ParameterAttribute = [System.Management.Automation.ParameterAttribute]::New()
-        $ParameterAttribute.Mandatory = $true
-        $ParameterAttribute.Position = 2
-        $AttributeCollection.Add($ParameterAttribute)
-        $arrSet = (Get-DOSize -APIKey $APIKey).Size
-        $ValidateSetAttribute = [System.Management.Automation.ValidateSetAttribute]::New($arrSet)
-        $AttributeCollection.Add($ValidateSetAttribute)
-        $RuntimeParameter = [System.Management.Automation.RuntimeDefinedParameter]::New($ParameterName, [string], $AttributeCollection)
-        $RuntimeParameterDictionary.Add($ParameterName, $RuntimeParameter)
-        return $RuntimeParameterDictionary
+        if($PSCmdlet.ParameterSetName -eq 'ImageSlug')
+        {
+            $sizes = Get-DOSize -APIKey $script:SavedDOAPIKey -ErrorAction Stop
+            $images = Get-DOImage -Limit ([Int]::MaxValue) -APIKey $script:SavedDOAPIKey -ErrorAction Stop
+            $Dictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::New()
+            $regionParam = @{
+                Name = 'Region'
+                Type = [String]
+                ValidateSet = $sizes.region | Sort-Object -Unique
+                Mandatory = $true
+                ParameterSetName = 'ImageSlug'
+                Position = 1
+                HelpMessage = 'Used to specify the regin the droplet is created.'
+                DPDictionary = $Dictionary
+            }
+            $sizeParam = @{
+                Name = 'Size'
+                Type = [String]
+                ValidateSet = $sizes.slug
+                Mandatory = $true
+                ParameterSetName = 'ImageSlug'
+                Position = 2
+                HelpMessage = 'Used to specify the size of the droplet.'
+                DPDictionary = $Dictionary
+            }
+            $imageParam = @{
+                Name = 'ImageSlug'
+                Type = [String]
+                ValidateSet = $images.slug | Sort-Object -Unique
+                Mandatory = $true
+                ParameterSetName = 'ImageSlug'
+                Position = 3
+                HelpMessage = 'Used to specify the image installed to the droplet.'
+                DPDictionary = $Dictionary
+            }
 
-        $ParameterName = 'Region'
-        $RuntimeParameterDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::New()
-        $AttributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::New()
-        $ParameterAttribute = [System.Management.Automation.ParameterAttribute]::New()
-        $ParameterAttribute.Mandatory = $true
-        $ParameterAttribute.Position = 3
-        $AttributeCollection.Add($ParameterAttribute)
-        $arrSet = (Get-DOSize -APIKey $APIKey).Region
-        $ValidateSetAttribute = [System.Management.Automation.ValidateSetAttribute]::New($arrSet)
-        $AttributeCollection.Add($ValidateSetAttribute)
-        $RuntimeParameter = [System.Management.Automation.RuntimeDefinedParameter]::New($ParameterName, [string], $AttributeCollection)
-        $RuntimeParameterDictionary.Add($ParameterName, $RuntimeParameter)
-        return $RuntimeParameterDictionary
+            New-DynamicParam @regionParam
+            New-DynamicParam @sizeParam
+            New-DynamicParam @imageParam
 
-        $ParameterName = 'Image'
-        Get-DOImage -Limit ([Int]::MaxValue)
-        $RuntimeParameterDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::New()
-        $AttributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::New()
-        $ParameterAttribute = [System.Management.Automation.ParameterAttribute]::New()
-        $ParameterAttribute.Mandatory = $true
-        $ParameterAttribute.Position = 4
-        $AttributeCollection.Add($ParameterAttribute)
-        $arrSet =
-        $ValidateSetAttribute = [System.Management.Automation.ValidateSetAttribute]::New($arrSet)
-        $AttributeCollection.Add($ValidateSetAttribute)
-        $RuntimeParameter = [System.Management.Automation.RuntimeDefinedParameter]::New($ParameterName, [string], $AttributeCollection)
-        $RuntimeParameterDictionary.Add($ParameterName, $RuntimeParameter)
-        return $RuntimeParameterDictionary
+            return $Dictionary
+        }
     }
 
     Begin
     {
-        if(-not $APIKey)
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
+        #region
+        # Here we add the variables for the dynamic parameters
+        if($PSCmdlet.ParameterSetName -eq 'ImageSlug')
         {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
+            function _temp {[CmdletBinding()] Param()}
+            $boundKeys = $PSBoundParameters.keys | Where-Object {(Get-Command _temp | Select-Object -ExpandProperty parameters).Keys -notcontains $_}
+            foreach($param in $boundKeys)
+            {
+                if(-not(Get-Variable -Name $param -Scope 0 -ErrorAction SilentlyContinue))
+                {
+                    New-Variable -Name $Param -Value $PSBoundParameters.$param
+                    Write-Verbose -Message "Adding variable for dynamic parameter '$param' with value '$($PSBoundParameters.$param)'"
+                }
+            }
         }
-        if(-not $Image -and -not $ImageID)
-        {
-            throw 'You must specifiy either an image or image ID.'
-        }
+        #endregion
+        #region
+        # Here we create the new VM request body
         [Hashtable]$sessionBodyBuild = @{}
-        if($Image)
-        {
-            $sessionBodyBuild += @{'image'=$Image}
-        }
-        if($ImageID)
-        {
-            $sessionBodyBuild += @{'image'=$ImageID}
-        }
-        if($SSHKey)
-        {
-            $sessionBodyBuild += @{'ssh_keys'=$SSHKey}
-        }
-        else
-        {
-            $SSHKey = $false
-        }
-        if($Backups)
-        {
-            $sessionBodyBuild += @{'backups'=$true}
-        }
-        if($IPv6)
-        {
-            $sessionBodyBuild += @{'ipv6'=$true}
-        }
-        if($PrivateNetworking)
-        {
-            $sessionBodyBuild += @{'private_networking'=$true}
-        }
-        if($UserData)
-        {
-            $sessionBodyBuild += @{'user_data'=$UserData}
-        }
-        $sessionBodyBuild += @{'region'=$Region;'size'=$Size}
+        if($SSHKey){ $sessionBodyBuild += @{'ssh_keys'=$SSHKey} }
+        if($Backups){ $sessionBodyBuild += @{'backups'=$true} }
+        if($IPv6){ $sessionBodyBuild += @{'ipv6'=$true} }
+        if($PrivateNetworking){ $sessionBodyBuild += @{'private_networking'=$true} }
+        if($UserData){ $sessionBodyBuild += @{'user_data'=$UserData} }
+        $sessionBodyBuild += @{'region'=$Region;'size'=$Size;'image'="$Image$ImageID"}# ImageID and Image should never be allowed to be set at the same time
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
+        #endregion
     }
     Process
     {
@@ -299,8 +288,17 @@
                 }
                 catch
                 {
-                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                    Write-Error $errorDetail.message
+                    if($_.Exception.Response)
+                    {
+                        # Convert a 400-599 error to something useable.
+                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                        Write-Error -Message $errorDetail.message
+                    }
+                    else
+                    {
+                        # Return the error as is.
+                        Write-Error -Message $_
+                    }
                 }
             }
         }

@@ -110,4 +110,21 @@ if(-not $(Get-TypeData -TypeName 'PS.DigitalOcean.*'))
     Update-TypeData @image -MemberName Type
     Update-TypeData @image -MemberName SizeGB
     Update-TypeData @image -MemberName MinimumDiskSize
+
+    #Adds size OutputType
+    $size = @{
+        MemberType = 'NoteProperty'
+        TypeName = 'PS.DigitalOcean.Size'
+        Value = $null
+    }
+
+    Update-TypeData @size -MemberName Slug
+    Update-TypeData @size -MemberName Memory
+    Update-TypeData @size -MemberName vCPU
+    Update-TypeData @size -MemberName Disk
+    Update-TypeData @size -MemberName Transfer
+    Update-TypeData @size -MemberName PriceMonthly
+    Update-TypeData @size -MemberName PriceHourly
+    Update-TypeData @size -MemberName Region
+    Update-TypeData @size -MemberName Available
 }
