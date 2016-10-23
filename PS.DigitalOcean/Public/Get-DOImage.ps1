@@ -205,9 +205,9 @@ function Get-DOImage
     }
     Process
     {
-        if($PSCmdlet.ParameterSetName -in @('Distribution','Application','Private','All'))
+        try
         {
-            try
+            if($PSCmdlet.ParameterSetName -in @('Distribution','Application','Private','All'))
             {
                 $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
                 foreach($info in $doInfo.images)
@@ -229,26 +229,9 @@ function Get-DOImage
                     Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
                 }
             }
-            catch
+            else
             {
-                if($_.Exception.Response)
-                {
-                        # Convert a 400-599 error to something useable.
-                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                        Write-Error -Message $errorDetail.message
-                }
-                else
-                {
-                    # Return the error as is.
-                    Write-Error -Message $_
-                }
-            }
-        }
-        else
-        {
-            foreach($i in $image)
-            {
-                try
+                foreach($i in $image)
                 {
                     [Uri]$doApiUri = "https://api.digitalocean.com/v2/images/$i"
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
@@ -267,20 +250,20 @@ function Get-DOImage
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
                     Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
                 }
-                catch
-                {
-                    if($_.Exception.Response)
-                    {
-                        # Convert a 400-599 error to something useable.
-                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                        Write-Error -Message $errorDetail.message
-                    }
-                    else
-                    {
-                        # Return the error as is.
-                        Write-Error -Message $_
-                    }
-                }
+            }
+        }
+        catch
+        {
+            if($_.Exception.Response)
+            {
+                # Convert a 400-599 error to something useable.
+                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                Write-Error -Message $errorDetail.message
+            }
+            else
+            {
+                # Return the error as is.
+                Write-Error -Message $_
             }
         }
     }

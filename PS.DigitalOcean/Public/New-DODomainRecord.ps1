@@ -129,6 +129,9 @@
         {
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
+        #region
+        # All MX, CNAME, and NS record must end with a '.'
+        # We handle that here if the user has not specified one
         if($RecordType -eq 'MX' -or $RecordType -eq 'CNAME' -or $RecordType -eq 'NS')
         {
             if(-not $Target.EndsWith('.'))
@@ -136,6 +139,7 @@
                 $Target = '{0}{1}' -f $Target,'.'
             }
         }
+        #endregion
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [String]$sessionBody = @{'type'=$RecordType;'name'=$DomainRecord;'data'=$Target;'priority'=$Priority;'port'=$Port;'weight'=$Weight} | ConvertTo-Json
         [Uri]$doApiUri = "https://api.digitalocean.com/v2/domains/$DomainName/records/"
@@ -161,8 +165,17 @@
             }
             catch
             {
-                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                Write-Error $errorDetail.message
+                if($_.Exception.Response)
+                {
+                    # Convert a 400-599 error to something useable.
+                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                    Write-Error -Message $errorDetail.message
+                }
+                else
+                {
+                    # Return the error as is.
+                    Write-Error -Message $_
+                }
             }
         }
     }

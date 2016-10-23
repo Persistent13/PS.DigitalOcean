@@ -72,9 +72,9 @@
     }
     Process
     {
-        if(-not $DomainName)
+        try
         {
-            try
+            if(-not $DomainName)
             {
                 $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
                 foreach($info in $doInfo.domains)
@@ -88,17 +88,9 @@
                     Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Domain'
                 }
             }
-            catch
+            else
             {
-                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                Write-Error $errorDetail.message
-            }
-        }
-        else
-        {
-            foreach($domain in $DomainName)
-            {
-                try
+                foreach($domain in $DomainName)
                 {
                     $doApiUriWithDomain = '{0}{1}' -f $doApiUri,$domain
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
@@ -110,11 +102,20 @@
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
                     Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Domain'
                 }
-                catch
-                {
-                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                    Write-Error $errorDetail.message
-                }
+            }
+        }
+        catch
+        {
+            if($_.Exception.Response)
+            {
+                # Convert a 400-599 error to something useable.
+                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                Write-Error -Message $errorDetail.message
+            }
+            else
+            {
+                # Return the error as is.
+                Write-Error -Message $_
             }
         }
     }

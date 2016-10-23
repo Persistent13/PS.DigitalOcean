@@ -134,14 +134,12 @@ function Stop-DODroplet
         {
             throw 'Use Connect-DOCloud to specifiy the API key.'
         }
-        if($TurnOff)
-        {
-            [String]$sessionBody = @{'type'='power_off'} | ConvertTo-Json
-        }
-        else
-        {
-            [String]$sessionBody = @{'type'='shutdown'} | ConvertTo-Json
-        }
+        #region
+        # Here we set the VM to either gracefully stop (power_off)
+        # or forefully restart (shutdown)
+        if($TurnOff){ [String]$sessionBody = @{'type'='power_off'} | ConvertTo-Json }
+        else { [String]$sessionBody = @{'type'='shutdown'} | ConvertTo-Json }
+        #endregion
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
@@ -171,8 +169,17 @@ function Stop-DODroplet
                 }
                 catch
                 {
-                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                    Write-Error $errorDetail.message
+                    if($_.Exception.Response)
+                    {
+                        # Convert a 400-599 error to something useable.
+                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                        Write-Error -Message $errorDetail.message
+                    }
+                    else
+                    {
+                        # Return the error as is.
+                        Write-Error -Message $_
+                    }
                 }
             }
         }

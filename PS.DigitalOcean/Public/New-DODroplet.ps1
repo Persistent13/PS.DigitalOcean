@@ -99,7 +99,7 @@
     [CmdletBinding(SupportsShouldProcess=$true,
                    ConfirmImpact='Low',
                    PositionalBinding=$false,
-                   DefaultParameterSetName='')]
+                   DefaultParameterSetName='ImageSlug')]
     [Alias('ndovm')]
     [OutputType('PS.DigitalOcean.Droplet')]
     Param

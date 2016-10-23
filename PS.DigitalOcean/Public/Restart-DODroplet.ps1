@@ -89,18 +89,13 @@ function Restart-DODroplet
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
-        if($Reset)
-        {
-            [String]$sessionBody = @{'type'='power_cycle'} | ConvertTo-Json
-        }
-        else
-        {
-            [String]$sessionBody = @{'type'='reset'} | ConvertTo-Json
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
+        #region
+        # Here we set the VM to either gracefully restart (power_cycle)
+        # or forefully restart (reset)
+        if($Reset){ [String]$sessionBody = @{'type'='power_cycle'} | ConvertTo-Json }
+        else{ [String]$sessionBody = @{'type'='reset'} | ConvertTo-Json }
+        #endregion
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
@@ -129,8 +124,17 @@ function Restart-DODroplet
                 }
                 catch
                 {
-                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                    Write-Error $errorDetail.message
+                    if($_.Exception.Response)
+                    {
+                        # Convert a 400-599 error to something useable.
+                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                        Write-Error -Message $errorDetail.message
+                    }
+                    else
+                    {
+                        # Return the error as is.
+                        Write-Error -Message $_
+                    }
                 }
             }
         }

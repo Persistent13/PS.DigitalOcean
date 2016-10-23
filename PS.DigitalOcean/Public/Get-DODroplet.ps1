@@ -122,9 +122,9 @@
     }
     Process
     {
-        if(-not $DropletID)
+        try
         {
-            try
+            if(-not $DropletID)
             {
                 $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
                 foreach($info in $doInfo.droplets)
@@ -152,18 +152,9 @@
                     Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
                 }
             }
-            catch
+            else
             {
-                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                Write-Error $errorDetail.message
-            }
-        }
-        else
-        {
-
-            foreach($droplet in $DropletID)
-            {
-                try
+                foreach($droplet in $DropletID)
                 {
                     $doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
@@ -189,11 +180,20 @@
                     # DoReturnInfo is returned after Add-ObjectDetail is processed.
                     Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
                 }
-                catch
-                {
-                    $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                    Write-Error $errorDetail.message
-                }
+            }
+        }
+        catch
+        {
+            if($_.Exception.Response)
+            {
+                # Convert a 400-599 error to something useable.
+                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                Write-Error -Message $errorDetail.message
+            }
+            else
+            {
+                # Return the error as is.
+                Write-Error -Message $_
             }
         }
     }
