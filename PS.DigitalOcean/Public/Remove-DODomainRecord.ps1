@@ -76,7 +76,7 @@
                 try
                 {
                     $doApiUriWithDomainID = '{0}{1}' -f $doApiUri,$domainID
-                    Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDomainID -Headers $sessionHeaders -ErrorAction Stop | Out-Null
+                    Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDomainID -Headers $sessionHeaders | Out-Null
                 }
                 catch
                 {
