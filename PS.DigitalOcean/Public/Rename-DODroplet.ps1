@@ -104,11 +104,11 @@ function Rename-DODroplet
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [UInt64[]]$DropletID,
-        # Uniqe ID or slug of the backup image.
+        # Uniqe ID or slug of the image.
         [Parameter(Mandatory)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
-        [String]$Name,
+        [String]$ImageName,
         # Used to bypass confirmation prompts.
         [Parameter(Mandatory=$false)]
         [ValidateNotNull()]
@@ -140,7 +140,7 @@ function Rename-DODroplet
             {
                 try
                 {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
+                    [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
                     $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUriWithID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
                         'ActionID' = $doInfo.action.id
