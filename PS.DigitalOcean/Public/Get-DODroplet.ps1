@@ -92,23 +92,30 @@
    PS.DigitalOcean
 #>
     [CmdletBinding(SupportsShouldProcess=$false,
-                  PositionalBinding=$true)]
+                   PositionalBinding=$true,
+                   DefaultParameterSetName='Tag')]
     [Alias('gdovm')]
     [OutputType('PS.DigitalOcean.Droplet')]
     Param
     (
         # API key to access account.
-        [Parameter(Mandatory=$false)]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [Alias('Key','Token')]
-        [String]$APIKey = $script:SavedDOAPIKey,
-        # API key to access account.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,ParameterSetName='DropletID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
-        [UInt64[]]$DropletID
+        [UInt64[]]$DropletID,
+        # Ttag to filter results by.
+        [Parameter(Mandatory=$false,ParameterSetName='Tag')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [String]$Tag,
+        # API key to access account.
+        [Parameter(Mandatory=$false,ParameterSetName='DropletID')]
+        [Parameter(Mandatory=$false,ParameterSetName='Tag')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Key','Token')]
+        [String]$APIKey = $script:SavedDOAPIKey
     )
 
     Begin
@@ -124,61 +131,63 @@
     {
         try
         {
-            if(-not $DropletID)
+            switch($PSCmdlet.ParameterSetName)
             {
-                $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
-                foreach($info in $doInfo.droplets)
-                {
-                    $doReturnInfo = [PSCustomObject]@{
-                        'DropletID' = $info.id
-                        'Name' = $info.name
-                        'Memory' = $info.memory
-                        'CPU' = $info.vcpus
-                        'DiskGB' = $info.disk
-                        'Locked' = $info.locked
-                        'Status' = $info.status
-                        'CreatedAt' = [datetime]$info.created_at
-                        'Features' = $info.features
-                        'Kernel' = $info.kernel
-                        'NextBackupWindow' = $info.next_backup_window
-                        'BackupID' = $info.backup_ids
-                        'SnapshotID' = $info.snapshot_ids
-                        'Image' = $info.image
-                        'Size' = $info.size_slug
-                        'Network' = $info.networks
-                        'Region' = $info.region
+                'Tag' {
+                    if($Tag){ [Uri]$doApiUri = '{0}{1}' -f $doApiUri,"?tag_name=$Tag" }
+                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                    foreach($info in $doInfo.droplets)
+                    {
+                        $doReturnInfo = [PSCustomObject]@{
+                            'DropletID' = $info.id
+                            'Name' = $info.name
+                            'Memory' = $info.memory
+                            'CPU' = $info.vcpus
+                            'DiskGB' = $info.disk
+                            'Locked' = $info.locked
+                            'Status' = $info.status
+                            'CreatedAt' = [datetime]$info.created_at
+                            'Features' = $info.features
+                            'Kernel' = $info.kernel
+                            'NextBackupWindow' = $info.next_backup_window
+                            'BackupID' = $info.backup_ids
+                            'SnapshotID' = $info.snapshot_ids
+                            'Image' = $info.image
+                            'Size' = $info.size_slug
+                            'Network' = $info.networks
+                            'Region' = $info.region
+                        }
+                        # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                        Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
                 }
-            }
-            else
-            {
-                foreach($droplet in $DropletID)
-                {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
-                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
-                    $doReturnInfo = [PSCustomObject]@{
-                        'DropletID' = $info.droplet.id
-                        'Name' = $info.droplet.name
-                        'Memory' = $info.droplet.memory
-                        'CPU' = $info.droplet.vcpus
-                        'DiskGB' = $info.droplet.disk
-                        'Locked' = $info.droplet.locked
-                        'Status' = $info.droplet.status
-                        'CreatedAt' = [datetime]$info.droplet.created_at
-                        'Features' = $info.droplet.features
-                        'Kernel' = $info.droplet.kernel
-                        'NextBackupWindow' = $info.droplet.next_backup_window
-                        'BackupID' = $info.droplet.backup_ids
-                        'SnapshotID' = $info.droplet.snapshot_ids
-                        'Image' = $info.droplet.image
-                        'Size' = $info.droplet.size_slug
-                        'Network' = $info.droplet.networks
-                        'Region' = $info.droplet.region
+                'DropletID' {
+                    foreach($droplet in $DropletID)
+                    {
+                        [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
+                        $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                        $doReturnInfo = [PSCustomObject]@{
+                            'DropletID' = $doInfo.droplet.id
+                            'Name' = $doInfo.droplet.name
+                            'Memory' = $doInfo.droplet.memory
+                            'CPU' = $doInfo.droplet.vcpus
+                            'DiskGB' = $doInfo.droplet.disk
+                            'Locked' = $doInfo.droplet.locked
+                            'Status' = $doInfo.droplet.status
+                            'CreatedAt' = [datetime]$doInfo.droplet.created_at
+                            'Features' = $doInfo.droplet.features
+                            'Kernel' = $doInfo.droplet.kernel
+                            'NextBackupWindow' = $doInfo.droplet.next_backup_window
+                            'BackupID' = $doInfo.droplet.backup_ids
+                            'SnapshotID' = $doInfo.droplet.snapshot_ids
+                            'Image' = $doInfo.droplet.image
+                            'Size' = $doInfo.droplet.size_slug
+                            'Network' = $doInfo.droplet.networks
+                            'Region' = $doInfo.droplet.region
+                        }
+                        # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                        Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
                 }
             }
         }
