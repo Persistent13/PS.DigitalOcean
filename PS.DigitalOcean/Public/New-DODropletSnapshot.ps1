@@ -140,7 +140,7 @@ function New-DODropletSnapshot
             {
                 try
                 {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
+                    [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
                     $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUriWithID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
                         'ActionID' = $doInfo.action.id

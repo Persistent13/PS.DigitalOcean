@@ -107,7 +107,7 @@ function Restart-DODroplet
             {
                 try
                 {
-                    $doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
+                    [Uri]$doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
                     $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
                         'ActionID' = $doInfo.action.id

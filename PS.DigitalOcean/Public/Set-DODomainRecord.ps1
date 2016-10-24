@@ -165,7 +165,7 @@
             {
                 try
                 {
-                    $doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
+                    [Uri]$doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
                     $doInfo = Invoke-RestMethod -Method PUT -Uri $doApiUriWithRecord -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
                         'ID' = $doInfo.domain_record.id

@@ -134,7 +134,7 @@ function Remove-DOImage
             {
                 try
                 {
-                    $doApiUriWithImageID = '{0}{1}' -f $doApiUri,$image
+                    [Uri]$doApiUriWithImageID = '{0}{1}' -f $doApiUri,$image
                     Invoke-RestMethod -Method POST -Uri $doApiUriWithImageID -Headers $sessionHeaders | Out-Null
                 }
                 catch

@@ -188,7 +188,7 @@ function Get-DOAction
             {
                 foreach($id in $ActionID)
                 {
-                    $doApiUriWithID = '{0}{1}' -f $doApiUri,$id
+                    [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,$id
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
                         'ActionID' = $doInfo.action.id

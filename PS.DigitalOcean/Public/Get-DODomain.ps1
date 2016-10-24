@@ -92,7 +92,7 @@
             {
                 foreach($domain in $DomainName)
                 {
-                    $doApiUriWithDomain = '{0}{1}' -f $doApiUri,$domain
+                    [Uri]$doApiUriWithDomain = '{0}{1}' -f $doApiUri,$domain
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
                         'Name' = $doInfo.domain.name

@@ -146,7 +146,7 @@
             {
                 foreach($record in $DomainRecordID)
                 {
-                    $doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
+                    [Uri]$doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithRecord -Headers $sessionHeaders -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
                         'ID' = $doInfo.domain_record.id
