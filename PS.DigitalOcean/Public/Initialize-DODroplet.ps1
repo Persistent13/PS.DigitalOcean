@@ -136,7 +136,7 @@ function Initialize-DODroplet
     DynamicParam {
         # A rebuild can only be started from a private image
         # so we add that switch here
-        $images = Get-DOImage -Private -Limit ([Int]::MaxValue) -APIKey $script:SavedDOAPIKey -ErrorAction Stop
+        $images = Get-DOImage -Limit ([Int]::MaxValue) -APIKey $script:SavedDOAPIKey -ErrorAction Stop
         $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
         $imageParam = @{
             Name = 'ImageSlug'
@@ -156,15 +156,34 @@ function Initialize-DODroplet
     Begin
     {
         if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
-        [String]$sessionBody = @{'type'='rebuild';'image'="$ImageSlug"} | ConvertTo-Json
+        #region
+        # Here we add the variables for the dynamic parameters
+        if($PSCmdlet.ParameterSetName -eq 'ImageSlug')
+        {
+            function _temp {[CmdletBinding()] Param()}
+            $boundKeys = $PSBoundParameters.keys | Where-Object {(Get-Command _temp | Select-Object -ExpandProperty parameters).Keys -notcontains $_}
+            foreach($param in $boundKeys)
+            {
+                if(-not(Get-Variable -Name $param -Scope 0 -ErrorAction SilentlyContinue))
+                {
+                    New-Variable -Name $Param -Value $PSBoundParameters.$param
+                    Write-Verbose -Message "Adding variable for dynamic parameter '$param' with value '$($PSBoundParameters.$param)'"
+                }
+            }
+        }
+        #endregion
+        #region
+        # Here we build the request body
+        [String]$sessionBody = @{'type'='rebuild';'image'="$ImageSlug$ImageID"} | ConvertTo-Json
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
+        #endregion
     }
     Process
     {
         foreach($droplet in $DropletID)
         {
-            if($Force -or $PSCmdlet.ShouldProcess("Restoring image $Image for $droplet."))
+            if($Force -or $PSCmdlet.ShouldProcess("Restoring image $ImageID$ImageSlug for $droplet."))
             {
                 try
                 {
@@ -175,7 +194,7 @@ function Initialize-DODroplet
                         'Status' = $doInfo.action.status
                         'Type' = $doInfo.action.type
                         'StartedAt' = [datetime]$doInfo.action.started_at
-                        'CompletedAt' = [datetime]$doInfo.action.completed_at
+                        'CompletedAt' = [nullable[datetime]]$doInfo.action.completed_at
                         'ResourceID' = $doInfo.action.resource_id
                         'ResourceType' = $doInfo.action.resource_type
                         'Region' = $doInfo.action.region_slug
