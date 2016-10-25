@@ -175,7 +175,7 @@ function Get-DOAction
                         'Status' = $info.status
                         'Type' = $info.type
                         'StartedAt' = [datetime]$info.started_at
-                        'CompletedAt' = [datetime]$info.completed_at
+                        'CompletedAt' = [nullable[datetime]]$info.completed_at
                         'ResourceID' = $info.resource_id
                         'ResourceType' = $info.resource_type
                         'Region' = $info.region_slug
@@ -195,7 +195,7 @@ function Get-DOAction
                         'Status' = $doInfo.action.status
                         'Type' = $doInfo.action.type
                         'StartedAt' = [datetime]$doInfo.action.started_at
-                        'CompletedAt' = [datetime]$doInfo.action.completed_at
+                        'CompletedAt' = [nullable[datetime]]$doInfo.action.completed_at
                         'ResourceID' = $doInfo.action.resource_id
                         'ResourceType' = $doInfo.action.resource_type
                         'Region' = $doInfo.action.region_slug

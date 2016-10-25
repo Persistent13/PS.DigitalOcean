@@ -166,7 +166,7 @@ function Get-DODropletAction
                     'Status' = $info.status
                     'Type' = $info.type
                     'StartedAt' = [datetime]$info.started_at
-                    'CompletedAt' = [datetime]$info.completed_at
+                    'CompletedAt' = [nullable[datetime]]$info.completed_at
                     'ResourceID' = $info.resource_id
                     'ResourceType' = $info.resource_type
                     'Region' = $info.region_slug

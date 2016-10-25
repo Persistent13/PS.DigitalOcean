@@ -147,7 +147,7 @@ function Set-DODropletKernel
                         'Status' = $doInfo.action.status
                         'Type' = $doInfo.action.type
                         'StartedAt' = [datetime]$doInfo.action.started_at
-                        'CompletedAt' = [datetime]$doInfo.action.completed_at
+                        'CompletedAt' = [nullable[datetime]]$doInfo.action.completed_at
                         'ResourceID' = $doInfo.action.resource_id
                         'ResourceType' = $doInfo.action.resource_type
                         'Region' = $doInfo.action.region_slug
