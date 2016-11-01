@@ -30,24 +30,32 @@
 #>
     [CmdletBinding(SupportsShouldProcess=$true,
                    ConfirmImpact='High',
-                   PositionalBinding=$true)]
+                   PositionalBinding=$true,
+                   DefaultParameterSetName='Tag')]
     [Alias('rdovm')]
     [OutputType()]
     Param
     (
-        # Used to specify the name of the domain name to delete.
-        [Parameter(Mandatory)]
+        # Used to specify the tag of the droplet(s) to delete.
+        [Parameter(Mandatory,ParameterSetName='Tag')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [String[]]$Tag,
+        # Used to specify the ID of the droplet(s) to delete.
+        [Parameter(Mandatory,ParameterSetName='DropletID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [UInt64[]]$DropletID,
         # Used to bypass confirmation prompts.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,ParameterSetName='DropletID')]
+        [Parameter(Mandatory=$false,ParameterSetName='Tag')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,ParameterSetName='DropletID')]
+        [Parameter(Mandatory=$false,ParameterSetName='Tag')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
@@ -56,38 +64,50 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
     Process
     {
-        foreach($droplet in $DropletID)
+        try
         {
-            if($Force -or $PSCmdlet.ShouldProcess("Deleting: $droplet."))
+            switch ($PSCmdlet.ParameterSetName)
             {
-                try
-                {
-                    [Uri]$doApiUriWithDroplet = '{0}{1}' -f $doApiUri,$droplet
-                    Invoke-RestMethod -Method DELETE -Uri $doApiUriWithDroplet -Headers $sessionHeaders | Out-Null
-                }
-                catch
-                {
-                    if($_.Exception.Response)
+                'Tag' {
+                    foreach($t in $Tag)
                     {
-                        # Convert a 400-599 error to something useable.
-                        $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
-                        Write-Error -Message $errorDetail.message
-                    }
-                    else
-                    {
-                        # Return the error as is.
-                        Write-Error -Message $_
+                        if($Force -or $PSCmdlet.ShouldProcess("Deleting droplets tagged: $t."))
+                        {
+                            [Uri]$doApiUri = '{0}{1}' -f $doApiUri,"?tag_name=$t"
+                            Invoke-RestMethod -Method DELETE -Uri $doApiUri -Headers $sessionHeaders | Out-Null
+                        }
                     }
                 }
+                'DropletID' {
+                    foreach($droplet in $DropletID)
+                    {
+                        if($Force -or $PSCmdlet.ShouldProcess("Deleting: $droplet."))
+                        {
+                            [Uri]$doApiUri = '{0}{1}' -f $doApiUri,$droplet
+                            Invoke-RestMethod -Method DELETE -Uri $doApiUri -Headers $sessionHeaders | Out-Null
+                        }
+                    }
+                }
+            }
+        }
+        catch
+        {
+            if($_.Exception.Response)
+            {
+                # Convert a 400-599 error to something useable.
+                $errorDetail = (Resolve-HTTPResponse -Response $_.Exception.Response) | ConvertFrom-Json
+                Write-Error -Message $errorDetail.message
+            }
+            else
+            {
+                # Return the error as is.
+                Write-Error -Message $_
             }
         }
     }

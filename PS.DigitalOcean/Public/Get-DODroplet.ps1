@@ -93,25 +93,31 @@
 #>
     [CmdletBinding(SupportsShouldProcess=$false,
                    PositionalBinding=$true,
-                   DefaultParameterSetName='Tag')]
+                   DefaultParameterSetName='All')]
     [Alias('gdovm')]
     [OutputType('PS.DigitalOcean.Droplet')]
     Param
     (
-        # API key to access account.
+        # Retrieve all droplets associated with the account.
+        [Parameter(Mandatory=$false,ParameterSetName='All')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [Switch]$All,
+        # Tag to filter results by.
+        [Parameter(Mandatory=$false,ParameterSetName='Tag')]
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
+        [String[]]$Tag,
+        # ID of the droplet to retrieve.
         [Parameter(Mandatory=$false,ParameterSetName='DropletID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [UInt64[]]$DropletID,
-        # Ttag to filter results by.
-        [Parameter(Mandatory=$false,ParameterSetName='Tag')]
-        [ValidateNotNull()]
-        [ValidateNotNullOrEmpty()]
-        [String]$Tag,
         # API key to access account.
         [Parameter(Mandatory=$false,ParameterSetName='DropletID')]
         [Parameter(Mandatory=$false,ParameterSetName='Tag')]
+        [Parameter(Mandatory=$false,ParameterSetName='All')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
@@ -120,10 +126,7 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
     }
@@ -133,8 +136,7 @@
         {
             switch($PSCmdlet.ParameterSetName)
             {
-                'Tag' {
-                    if($Tag){ [Uri]$doApiUri = '{0}{1}' -f $doApiUri,"?tag_name=$Tag" }
+                'All' {
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
                     foreach($info in $doInfo.droplets)
                     {
@@ -159,6 +161,37 @@
                         }
                         # DoReturnInfo is returned after Add-ObjectDetail is processed.
                         Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                    }
+                }
+                'Tag' {
+                    foreach($t in $Tag)
+                    {
+                        [Uri]$doApiUri = '{0}{1}' -f $doApiUri,"?tag_name=$t"
+                        $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                        foreach($info in $doInfo.droplets)
+                        {
+                            $doReturnInfo = [PSCustomObject]@{
+                                'DropletID' = $info.id
+                                'Name' = $info.name
+                                'Memory' = $info.memory
+                                'CPU' = $info.vcpus
+                                'DiskGB' = $info.disk
+                                'Locked' = $info.locked
+                                'Status' = $info.status
+                                'CreatedAt' = [datetime]$info.created_at
+                                'Features' = $info.features
+                                'Kernel' = $info.kernel
+                                'NextBackupWindow' = $info.next_backup_window
+                                'BackupID' = $info.backup_ids
+                                'SnapshotID' = $info.snapshot_ids
+                                'Image' = $info.image
+                                'Size' = $info.size_slug
+                                'Network' = $info.networks
+                                'Region' = $info.region
+                            }
+                            # DoReturnInfo is returned after Add-ObjectDetail is processed.
+                            Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                        }
                     }
                 }
                 'DropletID' {
