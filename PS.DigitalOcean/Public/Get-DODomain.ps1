@@ -63,10 +63,7 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/domains/'
     }
@@ -80,12 +77,12 @@
                 foreach($info in $doInfo.domains)
                 {
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.Domain'
                         'Name' = $info.name
                         'TTL' = $info.ttl
                         'ZoneFile' = $info.zone_file
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Domain'
+                    Write-Output $doReturnInfo
                 }
             }
             else
@@ -95,12 +92,12 @@
                     [Uri]$doApiUriWithDomain = '{0}{1}' -f $doApiUri,$domain
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithDomain -Headers $sessionHeaders -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.Domain'
                         'Name' = $doInfo.domain.name
                         'TTL' = $doInfo.domain.ttl
                         'ZoneFile' = $doInfo.domain.zone_file
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Domain'
+                    Write-Output $doReturnInfo
                 }
             }
         }

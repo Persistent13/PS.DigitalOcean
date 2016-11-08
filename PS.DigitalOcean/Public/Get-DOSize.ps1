@@ -70,10 +70,7 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/sizes/'
     }
@@ -85,6 +82,7 @@
             foreach($size in $doInfo.sizes)
             {
                 $doReturnInfo = [PSCustomObject]@{
+                    'PSTypeName' = 'PS.DigitalOcean.Size'
                     'Slug' = $size.slug
                     'Memory' = $size.memory
                     'vCPU' = $size.vcpus
@@ -95,8 +93,7 @@
                     'Region' = $size.regions
                     'Available' = $size.available
                 }
-                # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Size'
+                Write-Output $doReturnInfo
             }
         }
         catch
