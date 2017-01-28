@@ -69,7 +69,10 @@
                 'Status' = $doInfo.account.status
                 'StatusMessage' = $doInfo.account.status_message
             }
+<<<<<<< HEAD
             # Send object to pipeline.
+=======
+>>>>>>> cfa508dcd5f0d8dc0806edfc7cca926579dec250
             Write-Output $doReturnInfo
         }
         catch
