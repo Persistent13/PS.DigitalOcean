@@ -180,27 +180,18 @@ function Get-DOImage
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
 
         switch($PSCmdlet.ParameterSetName)
         {
-            'Distribution' {
-                [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&distribution=true"
-            } 'Application' {
-                [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&application=true"
-            } 'Private' {
-                [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&private=true"
-            } 'ImageID' {
-                [UInt64[]]$image = $ImageID
-            } 'ImageSlug' {
-                [String[]]$image = $ImageSlug
-            } Default {
-                [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit"
-            }
+            # We use "; break" to make sure that only one option is taken
+            'Distribution' { [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&distribution=true"; break }
+            'Application' { [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&application=true"; break }
+            'Private' { [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit&private=true"; break }
+            'ImageID' { [UInt64[]]$image = $ImageID; break }
+            'ImageSlug' { [String[]]$image = $ImageSlug; break }
+            Default { [Uri]$doApiUri = "https://api.digitalocean.com/v2/images?page=1&per_page=$Limit"; break }
         }
     }
     Process
@@ -213,6 +204,7 @@ function Get-DOImage
                 foreach($info in $doInfo.images)
                 {
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.Image'
                         'ImageID' = $info.id
                         'Name' = $info.name
                         'Distribution' = $info.distribution
@@ -225,8 +217,8 @@ function Get-DOImage
                         #'Index' = [Array]::IndexOf($doInfo.images,$info) + 1
                         #Add the count in the ps1xml format!!!!
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
+                    # Send object to pipeline.
+                    Write-Output $doReturnInfo
                 }
             }
             else
@@ -236,6 +228,7 @@ function Get-DOImage
                     [Uri]$doApiUri = "https://api.digitalocean.com/v2/images/$i"
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.Image'
                         'ImageID' = $doInfo.image.id
                         'Name' = $doInfo.images.name
                         'Distribution' = $doInfo.image.distribution
@@ -247,8 +240,8 @@ function Get-DOImage
                         'MinimumDiskSize' = $doInfo.image.min_disk_size
                         'SizeGB' = $doInfo.image.size_gigabytes
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
+                    # Send object to pipeline.
+                    Write-Output $doReturnInfo
                 }
             }
         }

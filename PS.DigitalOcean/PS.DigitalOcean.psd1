@@ -57,7 +57,7 @@ PowerShellVersion = '3.0'
 # RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-ScriptsToProcess = 'Script\Set-OutputTypes.ps1'
+# ScriptsToProcess = 'Script\Set-OutputTypes.ps1'
 
 # Type files (.ps1xml) to be loaded when importing this module
 # TypesToProcess = @()
@@ -69,7 +69,7 @@ ScriptsToProcess = 'Script\Set-OutputTypes.ps1'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('Connect-DOCloud','Disable-DODropletBackup','Enable-DODropletBackup','Enable-DODropletIPv6','Enable-DODropletPrivateNetworking','Get-DOAction','Get-DODomain','Get-DODomainRecord','Get-DODroplet','Get-DODropletAction','Get-DODropletBackup','Get-DODropletKernel','Get-DODropletSnapshot','Get-DOImage','Get-DOSize','Get-DOUser','Initialize-DODroplet','New-DODomain','New-DODomainRecord','New-DODroplet','New-DODropletSnapshot','Remove-DODomain','Remove-DODomainRecord','Remove-DODroplet','Remove-DOImage','Rename-DODroplet','Rename-DOImage','Reset-DODropletPassword','Resize-DODroplet','Restart-DODroplet','Restore-DODropletSnapshot','Set-DODomainRecord','Set-DODropletKernel','Start-DODroplet','Stop-DODroplet')
+FunctionsToExport = @('Connect-DOCloud','Disable-DODropletBackup','Enable-DODropletBackup','Enable-DODropletIPv6','Enable-DODropletPrivateNetworking','Get-DOAction','Get-DODomain','Get-DODomainRecord','Get-DODroplet','Get-DODropletAction','Get-DODropletBackup','Get-DODropletKernel','Get-DODropletSnapshot','Get-DOImage','Get-DOSize','Get-DOUser','Initialize-DODroplet','New-DODomain','New-DODomainRecord','New-DODroplet','New-DODropletSnapshot','Remove-DODomain','Remove-DODomainRecord','Remove-DODroplet','Remove-DOImage','Rename-DODroplet','Rename-DOImage','Reset-DODropletPassword','Resize-DODroplet','Restart-DODroplet','Restore-DODropletSnapshot','Set-DODomainRecord','Set-DODropletKernel','Start-DODroplet','Stop-DODroplet','Get-DODropletNeighbor')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = ''

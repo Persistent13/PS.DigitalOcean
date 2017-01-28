@@ -147,10 +147,7 @@ function Get-DODropletAction
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = "https://api.digitalocean.com/v2/droplets/$DropletID/actions?per_page=$Limit"
     }
@@ -162,6 +159,7 @@ function Get-DODropletAction
             foreach($info in $doInfo.actions)
             {
                 $doReturnInfo = [PSCustomObject]@{
+                    'PSTypeName' = 'PS.DigitalOcean.Action'
                     'ActionID' = $info.id
                     'Status' = $info.status
                     'Type' = $info.type
@@ -171,8 +169,8 @@ function Get-DODropletAction
                     'ResourceType' = $info.resource_type
                     'Region' = $info.region_slug
                 }
-                # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
+                # Send object to pipeline.
+                Write-Output $doReturnInfo
             }
         }
         catch

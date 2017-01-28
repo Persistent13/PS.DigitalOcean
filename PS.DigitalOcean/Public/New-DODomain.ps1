@@ -62,10 +62,7 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [String]$sessionBody = @{'name'=$DomainName;'ip_address'=$Target} | ConvertTo-Json
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/domains/'
@@ -78,12 +75,12 @@
             {
                 $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                 $doReturnInfo = [PSCustomObject]@{
+                    'PSTypeName' = 'PS.DigitalOcean.Domain'
                     'Name' = $doInfo.domain.name
                     'TTL' = $doInfo.domain.ttl
                     'ZoneFile' = $doInfo.domain.zone_file
                 }
-                # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Domain'
+                Write-Output $doReturnInfo
             }
             catch
             {

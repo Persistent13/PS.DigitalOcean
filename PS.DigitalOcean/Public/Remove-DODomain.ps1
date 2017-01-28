@@ -55,10 +55,7 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/domains/'
     }

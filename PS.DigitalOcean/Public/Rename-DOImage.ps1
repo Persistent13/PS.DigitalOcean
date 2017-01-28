@@ -124,10 +124,7 @@ function Rename-DOImage
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [String]$sessionBody = @{'name'=$NewName} | ConvertTo-Json
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = "https://api.digitalocean.com/v2/images/$ImageID"
@@ -140,6 +137,7 @@ function Rename-DOImage
             {
                 $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                 $doReturnInfo = [PSCustomObject]@{
+                    'PSTypeName' = 'PS.DigitalOcean.Image'
                     'ImageID' = $doInfo.image.id
                     'Name' = $doInfo.images.name
                     'Distribution' = $doInfo.image.distribution
@@ -151,8 +149,8 @@ function Rename-DOImage
                     'MinimumDiskSize' = $doInfo.image.min_disk_size
                     'SizeGB' = $doInfo.image.size_gigabytes
                 }
-                # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Image'
+                # Send object to pipeline.
+                Write-Output $doReturnInfo
             }
             catch
             {

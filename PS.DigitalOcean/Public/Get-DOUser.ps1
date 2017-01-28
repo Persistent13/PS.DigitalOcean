@@ -47,10 +47,7 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/account/'
     }
@@ -60,6 +57,7 @@
         {
             $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
             $doReturnInfo = [PSCustomObject]@{
+                'PSTypeName' = 'PS.DigitalOcean.Account'
                 'DropletLimit' = $doInfo.account.droplet_limit
                 'FloatingIPLimit' = $doInfo.account.floating_ip_limit
                 'Email' = $doInfo.account.email
@@ -68,8 +66,8 @@
                 'Status' = $doInfo.account.status
                 'StatusMessage' = $doInfo.account.status_message
             }
-            # DoReturnInfo is returned after Add-ObjectDetail is processed.
-            Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Account'
+            # Send object to pipeline.
+            Write-Output $doReturnInfo
         }
         catch
         {

@@ -110,6 +110,7 @@ function Restart-DODroplet
                     [Uri]$doApiUriWithDropletID = '{0}{1}' -f $doApiUri,"$droplet/actions/"
                     $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUriWithDropletID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.Action'
                         'ActionID' = $doInfo.action.id
                         'Status' = $doInfo.action.status
                         'Type' = $doInfo.action.type
@@ -119,8 +120,8 @@ function Restart-DODroplet
                         'ResourceType' = $doInfo.action.resource_type
                         'Region' = $doInfo.action.region_slug
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
+                    # Send object to pipeline.
+                    Write-Output $doReturnInfo
                 }
                 catch
                 {

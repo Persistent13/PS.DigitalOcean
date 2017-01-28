@@ -226,7 +226,7 @@
     {
         if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         #region
-        # Here we add the variables for the dynamic parameters
+        # Here we add the variables for the dynamic parameters to the cmdlet's scope
         if($PSCmdlet.ParameterSetName -eq 'ImageSlug')
         {
             function _temp {[CmdletBinding()] Param()}
@@ -265,6 +265,7 @@
                     [String]$sessionBodyWithName = $sessionBodyBuild + @{'name'=$droplet} | ConvertTo-Json
                     $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBodyWithName -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.Droplet'
                         'DropletID' = $doInfo.droplet.id
                         'Name' = $doInfo.droplet.name
                         'Memory' = $doInfo.droplet.memory
@@ -275,7 +276,7 @@
                         'CreatedAt' = [datetime]$doInfo.droplet.created_at
                         'Features' = $doInfo.droplet.features
                         'Kernel' = $doInfo.droplet.kernel
-                        'NextBackupWindow' = $doInfo.droplet.next_backup_window
+                        'NextBackupWindow' = [nullable[datetime]]$doInfo.droplet.next_backup_window
                         'BackupID' = $doInfo.droplet.backup_ids
                         'SnapshotID' = $doInfo.droplet.snapshot_ids
                         'Image' = $doInfo.droplet.image
@@ -283,8 +284,8 @@
                         'Network' = $doInfo.droplet.networks
                         'Region' = $doInfo.droplet.region
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                    # Send object to pipeline.
+                    Write-Output $doReturnInfo
                 }
                 catch
                 {

@@ -98,12 +98,12 @@ function Get-DODropletNeighbor
     [OutputType('PS.DigitalOcean.Droplet')]
     Param
     (
-        # Retrieve all droplets associated with the account.
+        # Retrieve all neighbors for all droplets associated with the account.
         [Parameter(Mandatory=$false,ParameterSetName='All')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$All,
-        # ID of the droplet to retrieve.
+        # Retrieve all neighbors for the selected droplet.
         [Parameter(Mandatory=$false,ParameterSetName='DropletID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -132,9 +132,10 @@ function Get-DODropletNeighbor
                 'All' {
                     [Uri]$doApiUri = 'https://api.digitalocean.com/v2/reports/droplet_neighbors/'
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
-                    foreach($info in $doInfo.neighbors)
+                    foreach($info in $doInfo.droplets)
                     {
                         $doReturnInfo = [PSCustomObject]@{
+                            'PSTypeName' = 'PS.DigitalOcean.Droplet'
                             'DropletID' = $info.id
                             'Name' = $info.name
                             'Memory' = $info.memory
@@ -145,7 +146,7 @@ function Get-DODropletNeighbor
                             'CreatedAt' = [datetime]$info.created_at
                             'Features' = $info.features
                             'Kernel' = $info.kernel
-                            'NextBackupWindow' = $info.next_backup_window
+                            'NextBackupWindow' = [nullable[datetime]]$info.next_backup_window
                             'BackupID' = $info.backup_ids
                             'SnapshotID' = $info.snapshot_ids
                             'Image' = $info.image
@@ -153,37 +154,45 @@ function Get-DODropletNeighbor
                             'Network' = $info.networks
                             'Region' = $info.region
                         }
-                        # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                        Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                        # Send object to pipeline.
+                        Write-Output $doReturnInfo
                     }
+                    # End switch comparison
+                    break
                 }
                 'DropletID' {
                     foreach($droplet in $DropletID)
                     {
-                        [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
-                        $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
-                        $doReturnInfo = [PSCustomObject]@{
-                            'DropletID' = $doInfo.droplet.id
-                            'Name' = $doInfo.droplet.name
-                            'Memory' = $doInfo.droplet.memory
-                            'CPU' = $doInfo.droplet.vcpus
-                            'DiskGB' = $doInfo.droplet.disk
-                            'Locked' = $doInfo.droplet.locked
-                            'Status' = $doInfo.droplet.status
-                            'CreatedAt' = [datetime]$doInfo.droplet.created_at
-                            'Features' = $doInfo.droplet.features
-                            'Kernel' = $doInfo.droplet.kernel
-                            'NextBackupWindow' = $doInfo.droplet.next_backup_window
-                            'BackupID' = $doInfo.droplet.backup_ids
-                            'SnapshotID' = $doInfo.droplet.snapshot_ids
-                            'Image' = $doInfo.droplet.image
-                            'Size' = $doInfo.droplet.size_slug
-                            'Network' = $doInfo.droplet.networks
-                            'Region' = $doInfo.droplet.region
+                        [Uri]$doApiUri = "https://api.digitalocean.com/v2/droplets/$droplet/neighbors/"
+                        $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                        foreach($info in $doInfo.neighbors)
+                        {
+                            $doReturnInfo = [PSCustomObject]@{
+                                'PSTypeName' = 'PS.DigitalOcean.Droplet'
+                                'DropletID' = $info.id
+                                'Name' = $info.name
+                                'Memory' = $info.memory
+                                'CPU' = $info.vcpus
+                                'DiskGB' = $info.disk
+                                'Locked' = $info.locked
+                                'Status' = $info.status
+                                'CreatedAt' = [datetime]$info.created_at
+                                'Features' = $info.features
+                                'Kernel' = $info.kernel
+                                'NextBackupWindow' = [nullable[datetime]]$info.next_backup_window
+                                'BackupID' = $info.backup_ids
+                                'SnapshotID' = $info.snapshot_ids
+                                'Image' = $info.image
+                                'Size' = $info.size_slug
+                                'Network' = $info.networks
+                                'Region' = $info.region
+                            }
+                            # Send object to pipeline.
+                            Write-Output $doReturnInfo
                         }
-                        # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                        Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
                     }
+                    # End switch comparison
+                    break
                 }
             }
         }

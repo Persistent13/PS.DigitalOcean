@@ -126,19 +126,20 @@ function Get-DOAction
     Param
     (
         # Used to get a specific action with the action ID.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,ParameterSetName='ActionID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [UInt64[]]$ActionID,
-        # Used to override the default limit of 20.
-        [Parameter(Mandatory=$false)]
+        # Used to override the default limit of 25.
+        [Parameter(Mandatory=$false,ParameterSetName='Limit')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Total','Size')]
-        [UInt64]$Limit = 20,
+        [UInt64]$Limit = 25,
         # API key to access account.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false,ParameterSetName='Limit')]
+        [Parameter(Mandatory=$false,ParameterSetName='ActionID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
@@ -147,10 +148,7 @@ function Get-DOAction
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         if(-not $Limit)
         {
@@ -165,43 +163,50 @@ function Get-DOAction
     {
         try
         {
-            if(-not $ActionID)
+            switch($PSCmdlet.ParameterSetName)
             {
-                $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
-                foreach($info in $doInfo.actions)
-                {
-                    $doReturnInfo = [PSCustomObject]@{
-                        'ActionID' = $info.id
-                        'Status' = $info.status
-                        'Type' = $info.type
-                        'StartedAt' = [datetime]$info.started_at
-                        'CompletedAt' = [nullable[datetime]]$info.completed_at
-                        'ResourceID' = $info.resource_id
-                        'ResourceType' = $info.resource_type
-                        'Region' = $info.region_slug
+                'Limit' {
+                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -ErrorAction Stop
+                    foreach($info in $doInfo.actions)
+                    {
+                        $doReturnInfo = [PSCustomObject]@{
+                            'PSTypeName' = 'PS.DigitalOcean.Action'
+                            'ActionID' = $info.id
+                            'Status' = $info.status
+                            'Type' = $info.type
+                            'StartedAt' = [nullable[datetime]]$info.started_at
+                            'CompletedAt' = [nullable[datetime]]$info.completed_at
+                            'ResourceID' = $info.resource_id
+                            'ResourceType' = $info.resource_type
+                            'Region' = $info.region_slug
+                        }
+                        # Send object to pipeline.
+                        Write-Output $doReturnInfo
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
+                    # End switch comparison
+                    break
                 }
-            }
-            else
-            {
-                foreach($id in $ActionID)
-                {
-                    [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,$id
-                    $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
-                    $doReturnInfo = [PSCustomObject]@{
-                        'ActionID' = $doInfo.action.id
-                        'Status' = $doInfo.action.status
-                        'Type' = $doInfo.action.type
-                        'StartedAt' = [datetime]$doInfo.action.started_at
-                        'CompletedAt' = [nullable[datetime]]$doInfo.action.completed_at
-                        'ResourceID' = $doInfo.action.resource_id
-                        'ResourceType' = $doInfo.action.resource_type
-                        'Region' = $doInfo.action.region_slug
+                'ActionID' {
+                    foreach($id in $ActionID)
+                    {
+                        [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,$id
+                        $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
+                        $doReturnInfo = [PSCustomObject]@{
+                            'PSTypeName' = 'PS.DigitalOcean.Action'
+                            'ActionID' = $doInfo.action.id
+                            'Status' = $doInfo.action.status
+                            'Type' = $doInfo.action.type
+                            'StartedAt' = [nullable[datetime]]$doInfo.action.started_at
+                            'CompletedAt' = [nullable[datetime]]$doInfo.action.completed_at
+                            'ResourceID' = $doInfo.action.resource_id
+                            'ResourceType' = $doInfo.action.resource_type
+                            'Region' = $doInfo.action.region_slug
+                        }
+                        # Send object to pipeline.
+                        Write-Output $doReturnInfo
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
+                    # End switch comparison
+                    break
                 }
             }
         }

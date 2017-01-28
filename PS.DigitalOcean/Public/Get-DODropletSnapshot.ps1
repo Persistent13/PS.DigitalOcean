@@ -147,10 +147,7 @@ function Get-DODropletSnapshot
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = "https://api.digitalocean.com/v2/droplets/$DropletID/snapshots?per_page=$Limit"
     }
@@ -162,6 +159,7 @@ function Get-DODropletSnapshot
             foreach($info in $doInfo.snapshots)
             {
                 $doReturnInfo = [PSCustomObject]@{
+                    'PSTypeName' = 'PS.DigitalOcean.Account'
                     'SnapshotID' = $info.id
                     'Name' = $info.name
                     'Distribution' = $info.distribution
@@ -172,8 +170,8 @@ function Get-DODropletSnapshot
                     'Type' = $info.type
                     'MinimumDiskSize' = $info.min_disk_size
                 }
-                # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Snapshot'
+                # Send object to pipeline.
+                Write-Output $doReturnInfo
             }
         }
         catch

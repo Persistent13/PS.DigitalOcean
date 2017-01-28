@@ -113,10 +113,7 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = "https://api.digitalocean.com/v2/domains/$DomainName/records/"
     }
@@ -130,6 +127,7 @@
                 foreach($info in $doInfo.domain_records)
                 {
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.DomainRecord'
                         'ID' = $info.id
                         'Type' = $info.type
                         'Name' = $info.name
@@ -138,8 +136,7 @@
                         'Port' = $info.port
                         'Weight' = $info.weight
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.DomainRecord'
+                    Write-Output $doReturnInfo
                 }
             }
             else
@@ -149,6 +146,7 @@
                     [Uri]$doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithRecord -Headers $sessionHeaders -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.DomainRecord'
                         'ID' = $doInfo.domain_record.id
                         'Type' = $doInfo.domain_record.type
                         'Name' = $doInfo.domain_record.name
@@ -157,8 +155,7 @@
                         'Port' = $doInfo.domain_record.port
                         'Weight' = $doInfo.domain_record.weight
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.DomainRecord'
+                    Write-Output $doReturnInfo
                 }
             }
         }

@@ -130,19 +130,13 @@
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         #region
         # All MX, CNAME, and NS record must end with a '.'
         # We handle that here if the user has not specified one
         if($RecordType -eq 'MX' -or $RecordType -eq 'CNAME' -or $RecordType -eq 'NS')
         {
-            if(-not $Target.EndsWith('.'))
-            {
-                $Target = '{0}{1}' -f $Target,'.'
-            }
+            if(-not $Target.EndsWith('.')){ $Target = '{0}{1}' -f $Target,'.' }
         }
         #endregion
         #region
@@ -168,6 +162,7 @@
                     [Uri]$doApiUriWithRecord = '{0}{1}' -f $doApiUri,$record
                     $doInfo = Invoke-RestMethod -Method PUT -Uri $doApiUriWithRecord -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.DomainRecord'
                         'ID' = $doInfo.domain_record.id
                         'Type' = $doInfo.domain_record.type
                         'Name' = $doInfo.domain_record.name
@@ -176,8 +171,7 @@
                         'Port' = $doInfo.domain_record.port
                         'Weight' = $doInfo.domain_record.weight
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.DomainRecord'
+                    Write-Output $doReturnInfo
                 }
                 catch
                 {

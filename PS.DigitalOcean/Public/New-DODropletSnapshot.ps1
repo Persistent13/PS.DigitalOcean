@@ -124,10 +124,7 @@ function New-DODropletSnapshot
 
     Begin
     {
-        if(-not $APIKey)
-        {
-            throw 'Use Connect-DOCloud to specifiy the API key.'
-        }
+        if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
         [String]$sessionBody = @{'type'='snapshot';'name'=$Name} | ConvertTo-Json
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/droplets/'
@@ -143,6 +140,7 @@ function New-DODropletSnapshot
                     [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,"$droplet/actions"
                     $doInfo = Invoke-RestMethod -Method POST -Uri $doApiUriWithID -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
+                        'PSTypeName' = 'PS.DigitalOcean.Action'
                         'ActionID' = $doInfo.action.id
                         'Status' = $doInfo.action.status
                         'Type' = $doInfo.action.type
@@ -152,8 +150,8 @@ function New-DODropletSnapshot
                         'ResourceType' = $doInfo.action.resource_type
                         'Region' = $doInfo.action.region_slug
                     }
-                    # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                    Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Action'
+                    # Send object to pipeline.
+                    Write-Output $doReturnInfo
                 }
                 catch
                 {

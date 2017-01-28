@@ -141,6 +141,7 @@
                     foreach($info in $doInfo.droplets)
                     {
                         $doReturnInfo = [PSCustomObject]@{
+                            'PSTypeName' = 'PS.DigitalOcean.Droplet'
                             'DropletID' = $info.id
                             'Name' = $info.name
                             'Memory' = $info.memory
@@ -151,7 +152,7 @@
                             'CreatedAt' = [datetime]$info.created_at
                             'Features' = $info.features
                             'Kernel' = $info.kernel
-                            'NextBackupWindow' = $info.next_backup_window
+                            'NextBackupWindow' = [nullable[datetime]]$info.next_backup_window
                             'BackupID' = $info.backup_ids
                             'SnapshotID' = $info.snapshot_ids
                             'Image' = $info.image
@@ -159,9 +160,11 @@
                             'Network' = $info.networks
                             'Region' = $info.region
                         }
-                        # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                        Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                        # Send object to pipeline.
+                        Write-Output $doReturnInfo
                     }
+                    # End switch comparison
+                    break
                 }
                 'Tag' {
                     foreach($t in $Tag)
@@ -171,6 +174,7 @@
                         foreach($info in $doInfo.droplets)
                         {
                             $doReturnInfo = [PSCustomObject]@{
+                                'PSTypeName' = 'PS.DigitalOcean.Droplet'
                                 'DropletID' = $info.id
                                 'Name' = $info.name
                                 'Memory' = $info.memory
@@ -181,7 +185,7 @@
                                 'CreatedAt' = [datetime]$info.created_at
                                 'Features' = $info.features
                                 'Kernel' = $info.kernel
-                                'NextBackupWindow' = $info.next_backup_window
+                                'NextBackupWindow' = [nullable[datetime]]$info.next_backup_window
                                 'BackupID' = $info.backup_ids
                                 'SnapshotID' = $info.snapshot_ids
                                 'Image' = $info.image
@@ -189,10 +193,12 @@
                                 'Network' = $info.networks
                                 'Region' = $info.region
                             }
-                            # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                            Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                            # Send object to pipeline.
+                            Write-Output $doReturnInfo
                         }
                     }
+                    # End switch comparison
+                    break
                 }
                 'DropletID' {
                     foreach($droplet in $DropletID)
@@ -200,6 +206,7 @@
                         [Uri]$doApiUriWithID = '{0}{1}' -f $doApiUri,$droplet
                         $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUriWithID -Headers $sessionHeaders -ErrorAction Stop
                         $doReturnInfo = [PSCustomObject]@{
+                            'PSTypeName' = 'PS.DigitalOcean.Droplet'
                             'DropletID' = $doInfo.droplet.id
                             'Name' = $doInfo.droplet.name
                             'Memory' = $doInfo.droplet.memory
@@ -210,7 +217,7 @@
                             'CreatedAt' = [datetime]$doInfo.droplet.created_at
                             'Features' = $doInfo.droplet.features
                             'Kernel' = $doInfo.droplet.kernel
-                            'NextBackupWindow' = $doInfo.droplet.next_backup_window
+                            'NextBackupWindow' = [nullable[datetime]]$doInfo.droplet.next_backup_window
                             'BackupID' = $doInfo.droplet.backup_ids
                             'SnapshotID' = $doInfo.droplet.snapshot_ids
                             'Image' = $doInfo.droplet.image
@@ -218,9 +225,11 @@
                             'Network' = $doInfo.droplet.networks
                             'Region' = $doInfo.droplet.region
                         }
-                        # DoReturnInfo is returned after Add-ObjectDetail is processed.
-                        Add-ObjectDetail -InputObject $doReturnInfo -TypeName 'PS.DigitalOcean.Droplet'
+                        # Send object to pipeline.
+                        Write-Output $doReturnInfo
                     }
+                    # End switch comparison
+                    break
                 }
             }
         }
