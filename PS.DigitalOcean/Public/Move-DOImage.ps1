@@ -63,7 +63,7 @@ function Move-DOImage
                 ValidateSet = $sizes.region | Sort-Object -Unique
                 Mandatory = $true
                 Position = 1
-                HelpMessage = 'Used to specify the regin the droplet will move to.'
+                HelpMessage = 'Used to specify the region the droplet will move to.'
                 DPDictionary = $Dictionary
             }
 
