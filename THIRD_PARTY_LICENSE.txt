@@ -6,12 +6,6 @@ Dakota Clark reserves all other rights not expressly granted under this agreemen
 
 ---
 
-Add-ObjectDetail.ps1
-
-    Copyright (c) 2016, Warren Frame
-    https://github.com/RamblingCookieMonster/PowerShell
-    MIT
-
 Resolve-HTTPResponse.ps1
 
     Copyright (c) 2016, Warren Frame
