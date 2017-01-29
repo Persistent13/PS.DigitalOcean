@@ -127,46 +127,37 @@ function Get-DOImage
     Param
     (
         # List only distribution images.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='Distribution')]
+        [Parameter(Mandatory=$false,ParameterSetName='Distribution')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Distribution,
         # List only application images.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='Application')]
+        [Parameter(Mandatory=$false,ParameterSetName='Application')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Application,
         # List only private, user create images.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='Private')]
+        [Parameter(Mandatory=$false,ParameterSetName='Private')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Private,
         # List only a specific image ID.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='ImageID')]
+        [Parameter(Mandatory=$false,ParameterSetName='ImageID')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID','SnapshotID','BackupID')]
         [UInt64[]]$ImageID,
         # List only a specific image slug.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='ImageSlug')]
+        [Parameter(Mandatory=$false,ParameterSetName='ImageSlug')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Slug')]
         [String[]]$ImageSlug,
         # Used to override the default limit of 20.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='Distribution')]
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='Application')]
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='Private')]
-        [Parameter(Mandatory=$false,
-                   ParameterSetName='All')]
+        [Parameter(Mandatory=$false,ParameterSetName='Distribution')]
+        [Parameter(Mandatory=$false,ParameterSetName='Application')]
+        [Parameter(Mandatory=$false,ParameterSetName='Private')]
+        [Parameter(Mandatory=$false,ParameterSetName='All')]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [UInt64]$Limit = 20,

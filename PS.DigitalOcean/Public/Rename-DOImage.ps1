@@ -94,7 +94,7 @@ function Rename-DOImage
     [CmdletBinding(SupportsShouldProcess=$true,
                    ConfirmImpact='High',
                    PositionalBinding=$true)]
-    [Alias('sdoi')]
+    [Alias('rdoi')]
     [OutputType('PS.DigitalOcean.Image')]
     Param
     (

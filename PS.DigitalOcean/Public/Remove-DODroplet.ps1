@@ -72,7 +72,7 @@
     {
         try
         {
-            switch ($PSCmdlet.ParameterSetName)
+            switch($PSCmdlet.ParameterSetName)
             {
                 'Tag' {
                     foreach($t in $Tag)
@@ -83,6 +83,8 @@
                             Invoke-RestMethod -Method DELETE -Uri $doApiUri -Headers $sessionHeaders | Out-Null
                         }
                     }
+                    # End switch comparison
+                    break
                 }
                 'DropletID' {
                     foreach($droplet in $DropletID)
@@ -93,6 +95,8 @@
                             Invoke-RestMethod -Method DELETE -Uri $doApiUri -Headers $sessionHeaders | Out-Null
                         }
                     }
+                    # End switch comparison
+                    break
                 }
             }
         }
