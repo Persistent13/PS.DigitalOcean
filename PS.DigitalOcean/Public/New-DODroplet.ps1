@@ -190,7 +190,7 @@
                 Mandatory = $true
                 ParameterSetName = 'ImageSlug'
                 Position = 1
-                HelpMessage = 'Used to specify the regin the droplet is created.'
+                HelpMessage = 'Used to specify the region the droplet is created.'
                 DPDictionary = $Dictionary
             }
             $sizeParam = @{
