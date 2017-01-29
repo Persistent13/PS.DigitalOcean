@@ -30,21 +30,24 @@ function Move-DOImage
 #>
     [CmdletBinding(SupportsShouldProcess=$true,
                    ConfirmImpact='High',
-                   PositionalBinding=$true)]
+                   PositionalBinding=$false)]
     [Alias('mdoi')]
     [OutputType('PS.DigitalOcean.Action')]
     Param
     (
         # Used to specify the ID of the droplet(s) to delete.
+        [Parameter(Mandatory,Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('ID')]
         [UInt64[]]$ImageID,
         # Used to bypass confirmation prompts.
+        [Parameter(Mandatory=$false,Position=2)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Switch]$Force,
         # API key to access account.
+        [Parameter(Mandatory=$false,Position=3)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
         [Alias('Key','Token')]
