@@ -35,7 +35,7 @@ function Move-DOImage
     [OutputType('PS.DigitalOcean.Action')]
     Param
     (
-        # Used to specify the ID of the droplet(s) to delete.
+        # Used to specify the ID of the droplet(s) to move.
         [Parameter(Mandatory,Position=0)]
         [ValidateNotNull()]
         [ValidateNotNullOrEmpty()]
@@ -88,7 +88,7 @@ function Move-DOImage
         }
         #endregion
         if(-not $APIKey){ throw 'Use Connect-DOCloud to specifiy the API key.' }
-        [Hashtable]$sessionBody = @{'type'='transfer';'region'=$Region}
+        [String]$sessionBody = @{'type'='transfer';'region'=$Region} | ConvertTo-Json
         [Hashtable]$sessionHeaders = @{'Authorization'="Bearer $APIKey";'Content-Type'='application/json'}
         [Uri]$doApiUri = 'https://api.digitalocean.com/v2/images/'
     }
@@ -100,6 +100,7 @@ function Move-DOImage
             {
                 if($Force -or $PSCmdlet.ShouldProcess("Move to $Region",$image))
                 {
+                    [Uri]$doApiUri = '{0}{1}' -f $doApiUri, "$image/actions"
                     $doInfo = Invoke-RestMethod -Method GET -Uri $doApiUri -Headers $sessionHeaders -Body $sessionBody -ErrorAction Stop
                     $doReturnInfo = [PSCustomObject]@{
                         'PSTypeName' = 'PS.DigitalOcean.Action'
